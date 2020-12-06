@@ -4,11 +4,16 @@ import grey from "@material-ui/core/colors/grey";
 import React from "react";
 import {Link, Route, Switch} from "react-router-dom";
 import Video from "./view/video";
+import HomePage from "./view/Home";
+import PrimarySearchAppBar from "./components/Other/AppBar";
+import withStyles from "@material-ui/core/styles/withStyles";
+import Container from "@material-ui/core/Container";
 
 const theme = createMuiTheme({
   palette: {
-    primary: orange,
-    secondary: grey
+      primary: orange,
+      secondary: grey,
+      type: 'dark'
   },
   breakpoints: {
     values: {
@@ -21,16 +26,25 @@ const theme = createMuiTheme({
   }
 });
 
+const StyledContainer = withStyles({
+    root: {
+        marginTop: 12
+    }
+})(Container);
+
 
 
 function App() {
 
   return (
       <ThemeProvider theme={theme}>
-        <Link to="/video/f6d7692a-c4a8-4489-a408-b93b9ad75e39">Первое видео</Link>
-        <Switch>
-          <Route path="/video/:videoToken" children={<Video />} />
-        </Switch>
+          <PrimarySearchAppBar />
+          <StyledContainer maxWidth="lg">
+              <Switch>
+                  <Route path="/video/:videoToken" children={<Video />} />
+                  <Route path="/" children={<HomePage />} />
+              </Switch>
+          </StyledContainer>
       </ThemeProvider>
   );
 }

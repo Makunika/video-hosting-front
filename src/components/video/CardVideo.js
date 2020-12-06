@@ -6,15 +6,13 @@ import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
-import LinearProgress from "@material-ui/core/LinearProgress";
 import API from "../../utils/API";
+import Loading from "../Other/Loading";
 
 const useStyles = makeStyles({
     video: {
-        width: '100%'
-    },
-    center: {
-        width: '100%'
+        width: '100%',
+        outline: 'none'
     }
 })
 
@@ -75,15 +73,7 @@ function CardVideo(props) {
         </Card>
     );
 
-    const Loading = (
-        <Card >
-            <CardContent>
-                <LinearProgress className={classes.center} />
-            </CardContent>
-        </Card>
-    );
-
-    return !isLoaded ? Loading : Video;
+    return !isLoaded ? <Loading /> : Video;
 
 }
 
