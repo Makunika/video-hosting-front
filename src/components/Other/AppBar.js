@@ -15,7 +15,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import {VideoCall} from "@material-ui/icons";
-import {useHistory} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -93,6 +93,11 @@ export default function PrimarySearchAppBar() {
     const history = useHistory();
 
     const handleProfileMenuOpen = (event) => {
+        if (!auth) {
+            history.push("/auth");
+        } else {
+            history.push("/#");
+        }
         setAnchorEl(event.currentTarget);
     };
 
@@ -126,7 +131,8 @@ export default function PrimarySearchAppBar() {
                     </Badge>
                 </IconButton>
                 <p>Добавить видео</p>
-            </MenuItem>}
+            </MenuItem>
+            }
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
                     aria-label="account of current user"
@@ -180,6 +186,7 @@ export default function PrimarySearchAppBar() {
                             color="inherit"
                         >
                             <AccountCircle />
+
                         </IconButton>
                     </div>
                     <div className={classes.sectionMobile}>

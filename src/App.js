@@ -8,11 +8,14 @@ import HomePage from "./view/Home";
 import PrimarySearchAppBar from "./components/Other/AppBar";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Container from "@material-ui/core/Container";
+import AuthPage from "./view/Auth";
+import NotFound from "./view/404/NotFound";
 
 const theme = createMuiTheme({
   palette: {
       primary: orange,
       secondary: grey,
+      info: grey,
       type: 'dark'
   },
   breakpoints: {
@@ -42,7 +45,9 @@ function App() {
           <StyledContainer maxWidth="lg">
               <Switch>
                   <Route path="/video/:videoToken" children={<Video />} />
-                  <Route path="/" children={<HomePage />} />
+                  <Route exact path="/" children={<HomePage />} />
+                  <Route path="/auth" children={<AuthPage />} />
+                  <Route children={<NotFound />} />
               </Switch>
           </StyledContainer>
       </ThemeProvider>

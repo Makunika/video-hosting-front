@@ -6,8 +6,6 @@ import CardVideo from "../../components/video/CardVideo";
 import CardComments from "../../components/video/CardComments";
 import CardVideosPreview from "../../components/video/CardVideosPreview";
 import {useParams} from "react-router-dom";
-import PrimarySearchAppBar from "../../components/Other/AppBar";
-
 
 
 function Video() {
