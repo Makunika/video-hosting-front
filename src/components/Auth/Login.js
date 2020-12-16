@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {loginUser, useAuthDispatch, useAuthState} from "../../Context";
+import {useHistory} from "react-router";
 
 function Copyright() {
     return (
@@ -48,6 +50,27 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login(props) {
     const classes = useStyles();
+    const history = useHistory();
+
+    const loginRef = useRef(null);
+    const passwordRef = useRef(null);
+
+    const dispatch = useAuthDispatch();
+    const { loading, errorMessage } = useAuthState();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        try {
+            let username = loginRef.current.value;
+            let password = passwordRef.current.value;
+            let user = await loginUser(dispatch, { username, password });
+            if (!user) return;
+            history.push('/');
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <Container maxWidth="sm">
@@ -57,21 +80,25 @@ export default function Login(props) {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign in
+                    Вход
                 </Typography>
                 <form className={classes.form} noValidate>
                     <TextField
+                        error={errorMessage !== ''}
                         variant="outlined"
                         margin="normal"
                         required
                         fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
+                        id="login"
+                        label="Login"
+                        name="login"
+                        autoComplete="username"
                         autoFocus
+                        disabled={loading}
+                        inputRef={loginRef}
                     />
                     <TextField
+                        error={errorMessage !== ''}
                         variant="outlined"
                         margin="normal"
                         required
@@ -81,24 +108,23 @@ export default function Login(props) {
                         type="password"
                         id="password"
                         autoComplete="current-password"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
-                        label="Remember me"
+                        disabled={loading}
+                        inputRef={passwordRef}
                     />
                     <Button
-                        type="submit"
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        onClick={handleLogin}
+                        disabled={loading}
                     >
-                        Sign In
+                        Войти
                     </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="#" variant="body2">
-                                Forgot password?
+                                Забыли пароль?
                             </Link>
                         </Grid>
                         <Grid item>

@@ -20,7 +20,7 @@ function NotFound() {
             <CssBaseline />
             <div className={classes.paper}>
                 <Typography component="h1" variant="h5">
-                    404 - Страница не найдена
+                    Страница не найдена
                 </Typography>
             </div>
         </Container>

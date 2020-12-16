@@ -14,8 +14,10 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import {VideoCall} from "@material-ui/icons";
+import {ExitToApp, VideoCall} from "@material-ui/icons";
 import {Link, useHistory} from "react-router-dom";
+import {checkAuth, logout} from "../../Context/actions";
+import {useAuthDispatch, useAuthState} from "../../Context";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -84,9 +86,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PrimarySearchAppBar() {
     const classes = useStyles();
+    const dispatch = useAuthDispatch();
+    const userDetails = useAuthState();
+    console.log('userDetails');
+    console.log(userDetails);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-    const [auth, setAuth] = React.useState(false);
+    const auth = checkAuth(dispatch, userDetails);
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -103,6 +109,10 @@ export default function PrimarySearchAppBar() {
 
     const handleMobileMenuClose = () => {
         setMobileMoreAnchorEl(null);
+    };
+
+    const handleExit = async () => {
+        await logout(dispatch);
     };
 
 
@@ -144,6 +154,19 @@ export default function PrimarySearchAppBar() {
                 </IconButton>
                 <p>Profile</p>
             </MenuItem>
+            {auth && <MenuItem onClick={handleProfileMenuOpen}>
+                <IconButton
+                    aria-label="Выйти из аккаунта"
+                    aria-controls="primary-search-account-menu"
+                    aria-haspopup="true"
+                    onClick={handleExit}
+                    color="inherit"
+                >
+                    <ExitToApp/>
+                </IconButton>
+                <p>Exit</p>
+            </MenuItem>
+            }
         </Menu>
     );
 
@@ -152,7 +175,7 @@ export default function PrimarySearchAppBar() {
             <AppBar position="static">
                 <Toolbar>
                     <Typography className={classes.title} variant="h6" noWrap onClick={() => {history.push("/")}}>
-                        Ютуб головоного мозга
+                        Tronica
                     </Typography>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
@@ -178,7 +201,7 @@ export default function PrimarySearchAppBar() {
                         }
 
                         <IconButton
-                            edge="end"
+
                             aria-label="Ваш аккаунт"
                             aria-controls={menuId}
                             aria-haspopup="true"
@@ -186,8 +209,19 @@ export default function PrimarySearchAppBar() {
                             color="inherit"
                         >
                             <AccountCircle />
-
                         </IconButton>
+                        {auth &&
+                        <IconButton
+                            edge="end"
+                            aria-label="Выйти из аккаунта"
+                            aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={handleExit}
+                            color="inherit"
+                        >
+                            <ExitToApp/>
+                        </IconButton>
+                        }
                     </div>
                     <div className={classes.sectionMobile}>
                         <IconButton
