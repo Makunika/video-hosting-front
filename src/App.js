@@ -11,6 +11,7 @@ import Container from "@material-ui/core/Container";
 import AuthPage from "./view/Auth";
 import NotFound from "./view/404/NotFound";
 import {AuthProvider, useAuthState} from "./Context";
+import {SnackbarProvider} from "notistack";
 
 const theme = createMuiTheme({
   palette: {
@@ -43,15 +44,17 @@ function App() {
     return (
         <AuthProvider>
             <ThemeProvider theme={theme}>
-                <PrimarySearchAppBar />
-                <StyledContainer maxWidth="lg">
-                    <Switch>
-                        <Route path="/video/:videoToken" children={<Video />} />
-                        <Route exact path="/" children={<HomePage />} />
-                        <Route path="/auth" children={<AuthPage />} />
-                        <Route children={<NotFound />} />
-                    </Switch>
-                </StyledContainer>
+                <SnackbarProvider maxSnack={3}>
+                    <PrimarySearchAppBar />
+                    <StyledContainer maxWidth="lg">
+                        <Switch>
+                            <Route path="/video/:videoToken" children={<Video />} />
+                            <Route exact path="/" children={<HomePage />} />
+                            <Route path="/auth" children={<AuthPage />} />
+                            <Route children={<NotFound />} />
+                        </Switch>
+                    </StyledContainer>
+                </SnackbarProvider>
             </ThemeProvider>
         </AuthProvider>
     );

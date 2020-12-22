@@ -63,7 +63,11 @@ function CardVideos() {
                 console.log(res.data.content);
                 setVideosData(res.data.content);
                 setIsLoaded(true);
-            })
+            },
+                (error) => {
+                    const response = error.response
+                    console.log(response)
+                })
             .catch(() => {
                 console.log('WOOOOW');
             });

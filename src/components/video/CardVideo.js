@@ -41,7 +41,11 @@ function CardVideo(props) {
                 console.log(res.data.data);
                 setVideoData(res.data.data);
                 setIsLoaded(true);
-            })
+            },
+                (error) => {
+                    const response = error.response
+                    console.log(response)
+                })
             .catch(() => {
                 console.log('WOOOOW');
             });

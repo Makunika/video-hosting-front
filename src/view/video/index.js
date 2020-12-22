@@ -1,15 +1,18 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import 'fontsource-roboto';
 import Grid from "@material-ui/core/Grid";
-import Container from "@material-ui/core/Container";
 import CardVideo from "../../components/video/CardVideo";
 import CardComments from "../../components/video/CardComments";
 import CardVideosPreview from "../../components/video/CardVideosPreview";
 import {useParams} from "react-router-dom";
+import {useAuthDispatch} from "../../Context";
+import {checkAuth} from "../../Context/actions";
 
 
 function Video() {
     const { videoToken } = useParams();
+    const dispatch = useAuthDispatch();
+    useEffect(() => checkAuth(dispatch), []);
 
     return (
         <Grid container spacing={4} justify="center">

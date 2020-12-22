@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import API from "../../utils/API";
+import {useSnackbar} from "notistack";
 
 function Copyright() {
     return (
@@ -52,9 +53,9 @@ export default function Register(props) {
     const loginRef = useRef(null);
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleSignUp = () => {
-        console.log('Отправка данных на регистрацию');
         const data = {
             username: loginRef.current.value,
             email: emailRef.current.value,
@@ -68,9 +69,12 @@ export default function Register(props) {
             .post('register', data)
             .then((res) => {
                 console.log(res.data);
-            }).catch((error) => {
-            const response = error.response
-            console.log(response.data.errors)
+                enqueueSnackbar("Вы зарегистрированы!", { variant: 'success' });
+                props.handleLink();
+            }, (error) => {
+                const response = error.response
+                enqueueSnackbar("Ошибка", { variant: 'error' });
+                console.log(response)
             });
     }
 
@@ -117,7 +121,7 @@ export default function Register(props) {
                                 fullWidth
                                 inputRef={loginRef}
                                 id="login"
-                                label="Login"
+                                label="Логин"
                                 name="login"
                                 autoComplete="username"
                             />
@@ -129,7 +133,7 @@ export default function Register(props) {
                                 fullWidth
                                 id="email"
                                 inputRef={emailRef}
-                                label="Email Address"
+                                label="Email"
                                 name="email"
                                 autoComplete="email"
                             />
@@ -141,16 +145,10 @@ export default function Register(props) {
                                 fullWidth
                                 inputRef={passwordRef}
                                 name="password"
-                                label="Password"
+                                label="Пароль"
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                label="I want to receive inspiration, marketing promotions and updates via email."
                             />
                         </Grid>
                     </Grid>
@@ -161,12 +159,12 @@ export default function Register(props) {
                         className={classes.submit}
                         onClick={handleSignUp}
                     >
-                        Sign Up
+                        Зарегистрироваться
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
                             <Link style={{cursor: 'pointer'}} variant="body2" onClick={() => props.handleLink()}>
-                                Already have an account? Sign in
+                                Уже есть аккаунт? Войти
                             </Link>
                         </Grid>
                     </Grid>

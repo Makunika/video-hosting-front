@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -88,11 +88,12 @@ export default function PrimarySearchAppBar() {
     const classes = useStyles();
     const dispatch = useAuthDispatch();
     const userDetails = useAuthState();
-    console.log('userDetails');
-    console.log(userDetails);
+    const auth = userDetails.token !== '';
+    useEffect(() => checkAuth(dispatch), []);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-    const auth = checkAuth(dispatch, userDetails);
+
+
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);

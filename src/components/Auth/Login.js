@@ -1,10 +1,8 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -14,6 +12,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {loginUser, useAuthDispatch, useAuthState} from "../../Context";
 import {useHistory} from "react-router";
+import {useSnackbar} from "notistack";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+import API from "../../utils/API";
 
 function Copyright() {
     return (
@@ -51,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Login(props) {
     const classes = useStyles();
     const history = useHistory();
+    const { enqueueSnackbar } = useSnackbar();
 
     const loginRef = useRef(null);
     const passwordRef = useRef(null);
@@ -65,11 +71,27 @@ export default function Login(props) {
             let username = loginRef.current.value;
             let password = passwordRef.current.value;
             let user = await loginUser(dispatch, { username, password });
-            if (!user) return;
-            history.push('/');
+            console.log('alo', user);
+            if (user) {
+                enqueueSnackbar("Вы авторизованы!", { variant: 'success' });
+                history.push('/');
+            } else {
+                enqueueSnackbar("Неправильный логин/пароль", { variant: 'error' });
+            }
+
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     return (
@@ -84,13 +106,12 @@ export default function Login(props) {
                 </Typography>
                 <form className={classes.form} noValidate>
                     <TextField
-                        error={errorMessage !== ''}
                         variant="outlined"
                         margin="normal"
                         required
                         fullWidth
                         id="login"
-                        label="Login"
+                        label="Логин"
                         name="login"
                         autoComplete="username"
                         autoFocus
@@ -98,13 +119,12 @@ export default function Login(props) {
                         inputRef={loginRef}
                     />
                     <TextField
-                        error={errorMessage !== ''}
                         variant="outlined"
                         margin="normal"
                         required
                         fullWidth
                         name="password"
-                        label="Password"
+                        label="Пароль"
                         type="password"
                         id="password"
                         autoComplete="current-password"
@@ -123,13 +143,13 @@ export default function Login(props) {
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
+                            <Link style={{cursor: 'pointer'}} variant="body2" onClick={handleClickOpen}>
                                 Забыли пароль?
                             </Link>
                         </Grid>
                         <Grid item>
                             <Link style={{cursor: 'pointer'}} variant="body2" onClick={() => props.handleLink()}>
-                                {"Don't have an account? Sign Up"}
+                                {"Нет аккаунта? Зарегистрироваться"}
                             </Link>
                         </Grid>
                     </Grid>
@@ -138,6 +158,60 @@ export default function Login(props) {
             <Box mt={8}>
                 <Copyright />
             </Box>
+            <ResetPassword handleClose={handleClose} open={open} />
         </Container>
     );
+}
+
+
+function ResetPassword(props) {
+    const { enqueueSnackbar } = useSnackbar();
+    const emailRef = useRef(null);
+
+    const handleButton = async () => {
+
+        const data = {
+            email: emailRef.current.value
+        }
+
+        await API.post('reset', data)
+            .then((data) => {
+                    enqueueSnackbar("Проверьте почту", { variant: 'success' });
+            },
+                (error) => {
+                    enqueueSnackbar("Пользователя с такой почтой не существует", { variant: 'error' });
+            });
+
+
+        props.handleClose();
+    }
+
+    return (
+        <Dialog open={props.open} onClose={props.handleClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Восстановление пароля</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Введите свою почту для восстановления пароля
+                </DialogContentText>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    inputRef={emailRef}
+                    label="Email"
+                    type="email"
+                    autoComplete="email"
+                    fullWidth
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={props.handleClose} color="primary">
+                    Отмена
+                </Button>
+                <Button onClick={handleButton} color="primary">
+                    Восстановить пароль
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
 }
