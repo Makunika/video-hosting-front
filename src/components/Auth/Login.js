@@ -1,12 +1,10 @@
 import React, {useRef, useState} from 'react';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -19,6 +17,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions";
 import API from "../../utils/API";
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 
 function Copyright() {
     return (
@@ -58,8 +57,10 @@ export default function Login(props) {
     const history = useHistory();
     const { enqueueSnackbar } = useSnackbar();
 
-    const loginRef = useRef(null);
-    const passwordRef = useRef(null);
+    const [formData, setFormData] = useState({
+        login: '',
+        password: ''
+    })
 
     const dispatch = useAuthDispatch();
     const { loading, errorMessage } = useAuthState();
@@ -68,8 +69,8 @@ export default function Login(props) {
         e.preventDefault();
 
         try {
-            let username = loginRef.current.value;
-            let password = passwordRef.current.value;
+            let username = formData.login;
+            let password = formData.password;
             let user = await loginUser(dispatch, { username, password });
             console.log('alo', user);
             if (user) {
@@ -94,21 +95,26 @@ export default function Login(props) {
         setOpen(false);
     };
 
+    const handleChange = (event) => {
+        const formData1 = {
+            password: formData.password,
+            login: formData.login
+        };
+        formData1[event.target.name] = event.target.value;
+        setFormData(formData1);
+    }
+
     return (
         <Container maxWidth="sm">
             <CssBaseline />
             <div className={classes.paper}>
-                <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
-                </Avatar>
                 <Typography component="h1" variant="h5">
-                    Вход
+                    Войти
                 </Typography>
-                <form className={classes.form} noValidate>
-                    <TextField
+                <ValidatorForm className={classes.form} onSubmit={handleLogin}>
+                    <TextValidator
                         variant="outlined"
                         margin="normal"
-                        required
                         fullWidth
                         id="login"
                         label="Логин"
@@ -116,12 +122,14 @@ export default function Login(props) {
                         autoComplete="username"
                         autoFocus
                         disabled={loading}
-                        inputRef={loginRef}
+                        validators={['required']}
+                        errorMessages={['Это поле обязательное']}
+                        value={formData.login}
+                        onChange={handleChange}
                     />
-                    <TextField
+                    <TextValidator
                         variant="outlined"
                         margin="normal"
-                        required
                         fullWidth
                         name="password"
                         label="Пароль"
@@ -129,14 +137,17 @@ export default function Login(props) {
                         id="password"
                         autoComplete="current-password"
                         disabled={loading}
-                        inputRef={passwordRef}
+                        validators={['required']}
+                        errorMessages={['Это поле обязательное']}
+                        value={formData.password}
+                        onChange={handleChange}
                     />
                     <Button
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick={handleLogin}
+                        type="submit"
                         disabled={loading}
                     >
                         Войти
@@ -153,7 +164,7 @@ export default function Login(props) {
                             </Link>
                         </Grid>
                     </Grid>
-                </form>
+                </ValidatorForm>
             </div>
             <Box mt={8}>
                 <Copyright />

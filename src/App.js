@@ -12,6 +12,8 @@ import AuthPage from "./view/Auth";
 import NotFound from "./view/404/NotFound";
 import {AuthProvider, useAuthState} from "./Context";
 import {SnackbarProvider} from "notistack";
+import {useHistory} from "react-router";
+import Reset from "./view/Reset";
 
 const theme = createMuiTheme({
   palette: {
@@ -38,6 +40,25 @@ const StyledContainer = withStyles({
 })(Container);
 
 
+function Routing() {
+    const userDetails = useAuthState();
+    const auth = userDetails.token !== '';
+
+    return (
+        <Switch>
+            <Route path="/video/:videoToken" children={<Video />} />
+            <Route exact path="/" children={<HomePage />} />
+            {
+                !auth && <Route path="/auth" children={<AuthPage />} />
+            }
+            {
+                !auth && <Route path="/reset" children={<Reset />} />
+            }
+            <Route children={<NotFound />} />
+        </Switch>
+    )
+}
+
 
 function App() {
 
@@ -47,12 +68,7 @@ function App() {
                 <SnackbarProvider maxSnack={3}>
                     <PrimarySearchAppBar />
                     <StyledContainer maxWidth="lg">
-                        <Switch>
-                            <Route path="/video/:videoToken" children={<Video />} />
-                            <Route exact path="/" children={<HomePage />} />
-                            <Route path="/auth" children={<AuthPage />} />
-                            <Route children={<NotFound />} />
-                        </Switch>
+                        <Routing />
                     </StyledContainer>
                 </SnackbarProvider>
             </ThemeProvider>

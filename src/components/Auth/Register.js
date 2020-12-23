@@ -1,19 +1,16 @@
-import React, {useRef} from 'react';
-import Avatar from '@material-ui/core/Avatar';
+import React, {useRef, useState} from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import API from "../../utils/API";
 import {useSnackbar} from "notistack";
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 
 function Copyright() {
     return (
@@ -50,32 +47,43 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Register(props) {
     const classes = useStyles();
-    const loginRef = useRef(null);
-    const emailRef = useRef(null);
-    const passwordRef = useRef(null);
     const { enqueueSnackbar } = useSnackbar();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        login: ''
+    })
+    const [loading, setLoading] = useState(false);
 
     const handleSignUp = () => {
+        setLoading(true);
         const data = {
-            username: loginRef.current.value,
-            email: emailRef.current.value,
-            password: passwordRef.current.value
+            username: formData.login,
+            email: formData.email,
+            password: formData.password
         }
-
-
-        //TODO: Проверка данных!!!!
-
         API
             .post('register', data)
             .then((res) => {
-                console.log(res.data);
+                setLoading(false);
                 enqueueSnackbar("Вы зарегистрированы!", { variant: 'success' });
                 props.handleLink();
             }, (error) => {
-                const response = error.response
-                enqueueSnackbar("Ошибка", { variant: 'error' });
-                console.log(response)
+                setLoading(false);
+                const response = error.response.data;
+                enqueueSnackbar(response.error, { variant: 'error' });
+                console.log(response);
             });
+    }
+
+    const handleChange = (event) => {
+        const formData1 = {
+            email: formData.email,
+            password: formData.password,
+            login: formData.login
+        };
+        formData1[event.target.name] = event.target.value;
+        setFormData(formData1);
     }
 
 
@@ -83,72 +91,53 @@ export default function Register(props) {
         <Container maxWidth="sm">
             <CssBaseline />
             <div className={classes.paper}>
-                <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
-                </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign up
+                    Регистрация
                 </Typography>
-                <form className={classes.form} noValidate >
+                <ValidatorForm className={classes.form}
+                               onSubmit={handleSignUp}>
                     <Grid container spacing={2}>
-                        {/*<Grid item xs={12} sm={6}>*/}
-                        {/*    <TextField*/}
-                        {/*        autoComplete="fname"*/}
-                        {/*        name="firstName"*/}
-                        {/*        variant="outlined"*/}
-                        {/*        required*/}
-                        {/*        fullWidth*/}
-                        {/*        id="firstName"*/}
-                        {/*        label="First Name"*/}
-                        {/*        autoFocus*/}
-                        {/*    />*/}
-                        {/*</Grid>*/}
-                        {/*<Grid item xs={12} sm={6}>*/}
-                        {/*    <TextField*/}
-                        {/*        variant="outlined"*/}
-                        {/*        required*/}
-                        {/*        fullWidth*/}
-                        {/*        id="lastName"*/}
-                        {/*        label="Last Name"*/}
-                        {/*        name="lastName"*/}
-                        {/*        autoComplete="lname"*/}
-                        {/*    />*/}
-                        {/*</Grid>*/}
                         <Grid item xs={12}>
-                            <TextField
+                            <TextValidator
                                 variant="outlined"
-                                required
                                 fullWidth
-                                inputRef={loginRef}
-                                id="login"
+                                onChange={handleChange}
                                 label="Логин"
                                 name="login"
                                 autoComplete="username"
+                                validators={['required']}
+                                errorMessages={['Это поле обязательное']}
+                                value={formData.login}
+                                disabled={loading}
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField
+                            <TextValidator
                                 variant="outlined"
-                                required
                                 fullWidth
-                                id="email"
-                                inputRef={emailRef}
+                                onChange={handleChange}
                                 label="Email"
                                 name="email"
                                 autoComplete="email"
+                                validators={['required', 'isEmail']}
+                                errorMessages={['Это поле обязательное', 'Неверный формат']}
+                                value={formData.email}
+                                disabled={loading}
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField
+                            <TextValidator
                                 variant="outlined"
-                                required
                                 fullWidth
-                                inputRef={passwordRef}
+                                onChange={handleChange}
                                 name="password"
                                 label="Пароль"
                                 type="password"
-                                id="password"
                                 autoComplete="current-password"
+                                validators={['required']}
+                                errorMessages={['Это поле обязательное']}
+                                value={formData.password}
+                                disabled={loading}
                             />
                         </Grid>
                     </Grid>
@@ -156,8 +145,9 @@ export default function Register(props) {
                         fullWidth
                         variant="contained"
                         color="primary"
+                        type="submit"
+                        disabled={loading}
                         className={classes.submit}
-                        onClick={handleSignUp}
                     >
                         Зарегистрироваться
                     </Button>
@@ -168,7 +158,7 @@ export default function Register(props) {
                             </Link>
                         </Grid>
                     </Grid>
-                </form>
+                </ValidatorForm>
             </div>
             <Box mt={5}>
                 <Copyright />

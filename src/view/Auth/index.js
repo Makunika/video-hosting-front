@@ -7,10 +7,7 @@ import {useAuthState} from "../../Context";
 
 function AuthPage() {
     const [login, setLogin] = useState(true);
-    const history = useHistory();
-    const userDetails = useAuthState();
-    const auth = userDetails.token !== '';
-    if (auth) history.push("/");
+
 
     function handleLink() {
         setLogin(!login);
