@@ -68,13 +68,12 @@ export default function Reset() {
                     <TextField
                         variant="outlined"
                         margin="normal"
-                        required
                         fullWidth
-                        name="password"
+                        name="new-password"
                         label="Введите новый пароль"
                         type="password"
                         id="password"
-                        autoComplete="current-password"
+                        autoComplete="new-password"
                         disabled={loading}
                         inputRef={passwordRef}
                     />

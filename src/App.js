@@ -2,7 +2,7 @@ import {createMuiTheme, ThemeProvider} from "@material-ui/core/styles";
 import orange from "@material-ui/core/colors/orange";
 import grey from "@material-ui/core/colors/grey";
 import React from "react";
-import {Link, Route, Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import Video from "./view/video";
 import HomePage from "./view/Home";
 import PrimarySearchAppBar from "./components/Other/AppBar";
@@ -12,8 +12,10 @@ import AuthPage from "./view/Auth";
 import NotFound from "./view/404/NotFound";
 import {AuthProvider, useAuthState} from "./Context";
 import {SnackbarProvider} from "notistack";
-import {useHistory} from "react-router";
 import Reset from "./view/Reset";
+import Profile from "./view/Profile";
+import * as locales from '@material-ui/core/locale';
+import NewVideo from "./view/NewVideo";
 
 const theme = createMuiTheme({
   palette: {
@@ -31,7 +33,7 @@ const theme = createMuiTheme({
       xl: 1920
     },
   }
-});
+}, locales['ruRU']);
 
 const StyledContainer = withStyles({
     root: {
@@ -53,6 +55,12 @@ function Routing() {
             }
             {
                 !auth && <Route path="/reset" children={<Reset />} />
+            }
+            {
+                auth && <Route path="/profile" children={<Profile />} />
+            }
+            {
+                auth && <Route path="/new" children={<NewVideo />} />
             }
             <Route children={<NotFound />} />
         </Switch>

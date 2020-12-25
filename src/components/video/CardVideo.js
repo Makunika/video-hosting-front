@@ -55,7 +55,7 @@ function CardVideo(props) {
         <Card>
             <CardMedia>
                 <video className={classes.video} controls>
-                    <source src={"http://localhost:8080/file/videos/" + videoData.video} type="video/mp4"/>
+                    <source src={"http://localhost:8080/api/file/videos/" + videoData.video} type="video/mp4"/>
                 </video>
             </CardMedia>
             <CardHeader title="Название видео" subheader="1 декабря 2020"/>

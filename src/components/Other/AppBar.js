@@ -103,7 +103,7 @@ export default function PrimarySearchAppBar() {
         if (!auth) {
             history.push("/auth");
         } else {
-            history.push("/#");
+            history.push("/profile");
         }
         setAnchorEl(event.currentTarget);
     };
@@ -115,6 +115,12 @@ export default function PrimarySearchAppBar() {
     const handleExit = async () => {
         await logout(dispatch);
     };
+
+    const handleNewVideo = () => {
+        if (auth) {
+            history.push("/new");
+        }
+    }
 
 
     const handleMobileMenuOpen = (event) => {
@@ -135,7 +141,7 @@ export default function PrimarySearchAppBar() {
             onClose={handleMobileMenuClose}
         >
             {auth &&
-            <MenuItem>
+            <MenuItem onClick={handleNewVideo}>
                 <IconButton color="inherit">
                     <Badge color="secondary">
                         <VideoCall />
@@ -155,12 +161,11 @@ export default function PrimarySearchAppBar() {
                 </IconButton>
                 <p>Profile</p>
             </MenuItem>
-            {auth && <MenuItem onClick={handleProfileMenuOpen}>
+            {auth && <MenuItem onClick={handleExit}>
                 <IconButton
                     aria-label="Выйти из аккаунта"
                     aria-controls="primary-search-account-menu"
                     aria-haspopup="true"
-                    onClick={handleExit}
                     color="inherit"
                 >
                     <ExitToApp/>
@@ -194,7 +199,7 @@ export default function PrimarySearchAppBar() {
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
                         {auth &&
-                        <IconButton aria-label="Добавить новое видео" color="inherit">
+                        <IconButton aria-label="Добавить новое видео" color="inherit" onClick={handleNewVideo}>
                             <Badge color="secondary">
                                 <VideoCall />
                             </Badge>
@@ -202,7 +207,6 @@ export default function PrimarySearchAppBar() {
                         }
 
                         <IconButton
-
                             aria-label="Ваш аккаунт"
                             aria-controls={menuId}
                             aria-haspopup="true"
@@ -210,6 +214,9 @@ export default function PrimarySearchAppBar() {
                             color="inherit"
                         >
                             <AccountCircle />
+                            {!auth && <Typography variant="body2">
+                                Зарегистрироваться
+                            </Typography> }
                         </IconButton>
                         {auth &&
                         <IconButton

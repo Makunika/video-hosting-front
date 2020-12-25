@@ -50,6 +50,9 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    input: {
+        WebkitBoxShadow: "0 0 0 1000px #303030 inset"
+    }
 }));
 
 export default function Login(props) {
@@ -126,6 +129,7 @@ export default function Login(props) {
                         errorMessages={['Это поле обязательное']}
                         value={formData.login}
                         onChange={handleChange}
+                        inputProps={{ className: classes.input }}
                     />
                     <TextValidator
                         variant="outlined"
@@ -141,6 +145,7 @@ export default function Login(props) {
                         errorMessages={['Это поле обязательное']}
                         value={formData.password}
                         onChange={handleChange}
+                        inputProps={{ className: classes.input }}
                     />
                     <Button
                         fullWidth

@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    input: {
+        WebkitBoxShadow: "0 0 0 1000px #303030 inset"
+    }
 }));
 
 export default function Register(props) {
@@ -109,6 +112,7 @@ export default function Register(props) {
                                 errorMessages={['Это поле обязательное']}
                                 value={formData.login}
                                 disabled={loading}
+                                inputProps={{ className: classes.input }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -123,6 +127,7 @@ export default function Register(props) {
                                 errorMessages={['Это поле обязательное', 'Неверный формат']}
                                 value={formData.email}
                                 disabled={loading}
+                                inputProps={{ className: classes.input }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -133,11 +138,12 @@ export default function Register(props) {
                                 name="password"
                                 label="Пароль"
                                 type="password"
-                                autoComplete="current-password"
+                                autoComplete="new-password"
                                 validators={['required']}
                                 errorMessages={['Это поле обязательное']}
                                 value={formData.password}
                                 disabled={loading}
+                                inputProps={{ className: classes.input }}
                             />
                         </Grid>
                     </Grid>
