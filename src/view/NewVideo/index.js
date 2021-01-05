@@ -75,7 +75,6 @@ export default function NewVideo() {
         f.append("userId", userDetails.id);
         f.append("file", document.getElementById("icon-button-file").files[0])
         await API.post("file/video", f, {
-            headers: {'Content-Type': 'multipart/form-data' },
             onUploadProgress: (progressEvent) => {
                 const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
                 console.log("onUploadProgress", totalLength);
@@ -89,11 +88,13 @@ export default function NewVideo() {
                 setProgress(0);
         },
             (error) => {
-                console.log(error.response);
+                console.log(error);
                 enqueueSnackbar(error.response, { variant: "error"});
                 setLoad(false);
                 setProgress(0);
-            })
+            }).catch((error) => {
+                console.log(error);
+        })
     }
 
     return (

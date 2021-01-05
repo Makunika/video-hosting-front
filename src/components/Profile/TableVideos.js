@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,28 +11,15 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {Button, ButtonGroup} from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
+import {useAuthState} from "../../Context";
+import {useSnackbar} from "notistack";
+import API from "../../utils/API";
+import {useHistory} from "react-router";
 
-function createData(name, views, likes, dislikes) {
-    return { name, views, likes, dislikes };
+function createData(id,name, views, likes, dislikes) {
+    return { id ,name, views, likes, dislikes };
 }
-
-const rows = [
-    createData('Cupcake', 305, 300, 67),
-    createData('Donut', 452, 25, 51),
-    createData('Eclair', 262, 16, 24),
-    createData('Frozen yoghurt', 159, 6, 24),
-    createData('Gingerbread', 356, 16, 49),
-    createData('Honeycomb', 408, 3, 87),
-    createData('Ice cream sandwich', 237, 9.0, 37),
-    createData('Jelly Bean', 375, 0, 94),
-    createData('KitKat', 518, 26, 65),
-    createData('Lollipop', 392, 0, 98),
-    createData('Marshmallow', 318, 0, 81),
-    createData('Nougat', 360, 19, 9),
-    createData('Oreo', 437, 18, 63),
-];
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -133,7 +120,11 @@ export default function EnhancedTable() {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [page, setPage] = React.useState(0);
+    const [rows, setRows] = React.useState([]);
+    const userDetails = useAuthState();
+    const { enqueueSnackbar } = useSnackbar();
     const rowsPerPage = 8;
+    const history = useHistory();
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -145,7 +136,39 @@ export default function EnhancedTable() {
         setPage(newPage);
     };
 
+    useEffect(() => {
+        API.get("videos/user/" + userDetails.user.id)
+            .then((response) => {
+                console.log(response.data.data);
+                const r = [];
+                Array.prototype.map.call(response.data.data, function (item) {
+                    r.push(createData(item.id, item.name, item.views, 100, 100))
+                })
+                setRows(r);
+            },
+                (error) => {
+                    console.log(error);
+                    enqueueSnackbar("Произошла ошибка", {variant: "error"});
+                })
+    },[])
+
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+
+    function deleteVideo(id) {
+        API.delete("videos/" + id)
+            .then((response) => {
+                enqueueSnackbar("Успешное удаление", {variant: "success"});
+                const r = [];
+                Array.prototype.map.call(response.data.data, function (item) {
+                    r.push(createData(item.id, item.name, 100, 100, 100))
+                })
+                setRows(r);
+            },
+                (error) => {
+                    console.log(error);
+                    enqueueSnackbar("Произошла ошибка при удалении", {variant: "error"});
+                })
+    }
 
     return (
         <div className={classes.root}>
@@ -176,7 +199,7 @@ export default function EnhancedTable() {
                                             tabIndex={-1}
                                             key={row.name}
                                         >
-                                            <TableCell>{row.name}</TableCell>
+                                            <TableCell style={{cursor: "pointer"}} onClick={() => { history.push("/video/" + row.id);}}>{row.name}</TableCell>
                                             <TableCell align="right">{row.views}</TableCell>
                                             <TableCell align="right">{row.likes}</TableCell>
                                             <TableCell align="right">{row.dislikes}</TableCell>
@@ -184,7 +207,9 @@ export default function EnhancedTable() {
                                                 <IconButton size="small">
                                                     <EditIcon />
                                                 </IconButton>
-                                                <IconButton size="small">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => {deleteVideo(row.id)}}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </TableCell>

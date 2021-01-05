@@ -7,6 +7,9 @@ import {PhotoCamera} from "@material-ui/icons";
 import TextField from "@material-ui/core/TextField";
 import {useSnackbar} from "notistack";
 import IconButton from "@material-ui/core/IconButton";
+import {useAuthDispatch, useAuthState} from "../../Context";
+import API from "../../utils/API";
+import {changeUsername} from "../../Context/actions";
 
 
 const useStyle = makeStyles((theme) => ({
@@ -22,25 +25,39 @@ const useStyle = makeStyles((theme) => ({
 
 export default function EditProfile() {
     const classes = useStyle();
+    const userDetails = useAuthState();
+    const dispatch = useAuthDispatch();
     const { enqueueSnackbar } = useSnackbar();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        login: ''
+        username: userDetails.user.username
     })
     const [loading, setLoading] = useState(false);
 
     const handleEditProfile = () => {
-
+        setLoading(true);
+        API.put("users", formData)
+            .then((response) => {
+                console.log(response);
+                changeUsername(dispatch, response.data.data);
+                enqueueSnackbar("Логин успешно изменен", { variant: "success"});
+                setLoading(false);
+            },
+                (error) => {
+                console.log(error);
+                setLoading(false);
+                })
     }
 
     const handleChange = (event) => {
         const formData1 = {
             email: formData.email,
             password: formData.password,
-            login: formData.login
+            username: formData.username
         };
         formData1[event.target.name] = event.target.value;
+        console.log(formData1);
         setFormData(formData1);
     }
 
@@ -66,13 +83,14 @@ export default function EditProfile() {
                                 fullWidth
                                 onChange={handleChange}
                                 label="Логин"
-                                name="login"
+                                name="username"
                                 autoComplete="off"
                                 validators={['required']}
                                 errorMessages={['Это поле обязательное']}
-                                value={formData.login}
+                                value={formData.username}
                                 disabled={loading}
-                            />
+                            >
+                            </TextValidator>
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
@@ -81,9 +99,8 @@ export default function EditProfile() {
                                 label="Email"
                                 name="email"
                                 disabled
-                                value={"Hello"}
+                                value={userDetails.user.email}
                             >
-                                Hello
                             </TextField>
                         </Grid>
                         <Grid item xs={12} lg={5}>
@@ -102,7 +119,6 @@ export default function EditProfile() {
                                 fullWidth
                                 variant="outlined"
                                 color="primary"
-                                type="submit"
                                 disabled={loading}
                             >
                                 Изменить пароль

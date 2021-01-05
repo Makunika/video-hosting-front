@@ -1,13 +1,15 @@
 import CardMedia from "@material-ui/core/CardMedia";
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from "@material-ui/core/Avatar";
-import {CardContent} from "@material-ui/core";
+import {CardContent, IconButton} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import API from "../../utils/API";
 import Loading from "../Other/Loading";
+import {ThumbDown, ThumbUp} from "@material-ui/icons";
+import {useAuthState} from "../../Context";
 
 const useStyles = makeStyles({
     video: {
@@ -19,7 +21,8 @@ const useStyles = makeStyles({
 function CardVideo(props) {
 
     const videoToken = props.videoToken;
-
+    const userDetails = useAuthState();
+    const auth = userDetails.token !== '';
     const classes = useStyles();
 
     const [isLoaded, setIsLoaded] = useState(false);
@@ -32,6 +35,7 @@ function CardVideo(props) {
             img: 'img'
         }
     })
+    const [like, setLike] = useState(0);
     const [token, setToken] = useState(videoToken);
 
 
@@ -43,13 +47,28 @@ function CardVideo(props) {
                 setIsLoaded(true);
             },
                 (error) => {
-                    const response = error.response
-                    console.log(response)
                 })
             .catch(() => {
-                console.log('WOOOOW');
             });
     }, []);
+
+    function handleLike() {
+        if (like === 1) {
+            setLike(0);
+        }
+        else {
+            setLike(1);
+        }
+    }
+
+    function handleDislike() {
+        if (like === -1) {
+            setLike(0);
+        }
+        else {
+            setLike(-1);
+        }
+    }
 
     const Video = (
         <Card>
@@ -58,7 +77,51 @@ function CardVideo(props) {
                     <source src={"http://localhost:8080/api/file/videos/" + videoData.video} type="video/mp4"/>
                 </video>
             </CardMedia>
-            <CardHeader title="Название видео" subheader="1 декабря 2020"/>
+            <CardHeader
+                title={videoData.name}
+                subheader={
+                    <React.Fragment>
+                        {videoData.views + " просмотров"}
+                        <Typography
+                            variant="subtitle2"
+                        >
+                            {new Date(videoData.createDate).toLocaleDateString()}
+                        </Typography>
+                    </React.Fragment>
+                }
+                action={
+                    <React.Fragment>
+                        <IconButton
+                            color={like === 1 ? "primary" : "default"}
+                            disabled={!auth}
+                            onClick={handleLike}
+                        >
+                            <ThumbUp />
+                        </IconButton>
+                        <Typography
+                            variant="subtitle2"
+                            style={{display: 'inline'}}
+                            color="textSecondary"
+                        >
+                            1000
+                        </Typography>
+                        <IconButton
+                            color={like === -1 ? "primary" : "default"}
+                            disabled={!auth}
+                            onClick={handleDislike}
+                        >
+                            <ThumbDown />
+                        </IconButton>
+                        <Typography
+                            variant="subtitle2"
+                            color="textSecondary"
+                            style={{display: 'inline'}}
+                        >
+                            1000
+                        </Typography>
+                    </React.Fragment>
+                }
+            />
             <CardHeader
                 avatar={
                     <Avatar aria-label="recipe">
@@ -68,10 +131,7 @@ function CardVideo(props) {
                 title={videoData.user.name}/>
             <CardContent>
                 <Typography>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                    Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                    Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+                    {videoData.about}
                 </Typography>
             </CardContent>
         </Card>

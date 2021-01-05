@@ -44,3 +44,8 @@ export function checkAuth(dispatch) {
         localStorage.removeItem('token');
     });
 }
+
+export function changeUsername(dispatch, payload) {
+    dispatch({ type: 'LOGIN_SUCCESS', payload: payload });
+    localStorage.setItem('currentUser', JSON.stringify(payload));
+}

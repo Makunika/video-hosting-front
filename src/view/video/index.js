@@ -5,13 +5,15 @@ import CardVideo from "../../components/video/CardVideo";
 import CardComments from "../../components/video/CardComments";
 import CardVideosPreview from "../../components/video/CardVideosPreview";
 import {useParams} from "react-router-dom";
-import {useAuthDispatch} from "../../Context";
+import {useAuthDispatch, useAuthState} from "../../Context";
 import {checkAuth} from "../../Context/actions";
 
 
 function Video() {
     const { videoToken } = useParams();
     const dispatch = useAuthDispatch();
+    const userDetails = useAuthState();
+    const auth = userDetails.token !== '';
     useEffect(() => checkAuth(dispatch), []);
 
     return (
@@ -20,7 +22,7 @@ function Video() {
                 <CardVideo videoToken={videoToken} />
             </Grid>
             <Grid item xs={12} md={6} lg={7} sm={7}>
-                <CardComments />
+                <CardComments videoId={videoToken} userId={userDetails.user.id} auth={auth} />
             </Grid>
             <Grid item xs={10} md={3} lg={4} sm={5}>
                 <CardVideosPreview />
