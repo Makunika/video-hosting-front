@@ -33,6 +33,13 @@ const useStyles = makeStyles((theme) => ({
         },
         cursor: 'pointer'
     },
+    titleOne: {
+        display: 'block',
+        [theme.breakpoints.up('sm')]: {
+            display: 'none',
+        },
+        cursor: 'pointer'
+    },
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
@@ -41,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: fade(theme.palette.common.white, 0.25),
         },
         marginRight: theme.spacing(2),
-        marginLeft: 0,
+        marginLeft: theme.spacing(2),
         width: '100%',
         [theme.breakpoints.up('sm')]: {
             marginLeft: theme.spacing(3),
@@ -105,7 +112,7 @@ export default function PrimarySearchAppBar() {
         } else {
             history.push("/profile");
         }
-        setAnchorEl(event.currentTarget);
+        handleMobileMenuClose()
     };
 
     const handleMobileMenuClose = () => {
@@ -114,12 +121,14 @@ export default function PrimarySearchAppBar() {
 
     const handleExit = async () => {
         await logout(dispatch);
+        handleMobileMenuClose()
     };
 
     const handleNewVideo = () => {
         if (auth) {
             history.push("/new");
         }
+        handleMobileMenuClose()
     }
 
 
@@ -183,6 +192,9 @@ export default function PrimarySearchAppBar() {
                     <Typography className={classes.title} variant="h6" noWrap onClick={() => {history.push("/")}}>
                         Tronica
                     </Typography>
+                    <Typography className={classes.titleOne} variant="h5" onClick={() => {history.push("/")}}>
+                        T
+                    </Typography>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
@@ -214,9 +226,6 @@ export default function PrimarySearchAppBar() {
                             color="inherit"
                         >
                             <AccountCircle />
-                            {!auth && <Typography variant="body2">
-                                Зарегистрироваться
-                            </Typography> }
                         </IconButton>
                         {auth &&
                         <IconButton

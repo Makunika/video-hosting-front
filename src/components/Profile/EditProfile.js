@@ -114,16 +114,6 @@ export default function EditProfile() {
                                 Сохранить
                             </Button>
                         </Grid>
-                        <Grid item xs={12} lg={5}>
-                            <Button
-                                fullWidth
-                                variant="outlined"
-                                color="primary"
-                                disabled={loading}
-                            >
-                                Изменить пароль
-                            </Button>
-                        </Grid>
                     </Grid>
 
                 </ValidatorForm>

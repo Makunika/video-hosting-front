@@ -10,6 +10,8 @@ import API from "../../utils/API";
 import Loading from "../Other/Loading";
 import {ThumbDown, ThumbUp} from "@material-ui/icons";
 import {useAuthState} from "../../Context";
+import {useSnackbar} from "notistack";
+import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles({
     video: {
@@ -24,6 +26,7 @@ function CardVideo(props) {
     const userDetails = useAuthState();
     const auth = userDetails.token !== '';
     const classes = useStyles();
+    const { enqueueSnackbar } = useSnackbar();
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [videoData, setVideoData] = useState({
@@ -35,8 +38,72 @@ function CardVideo(props) {
             img: 'img'
         }
     })
+    const [mark, setMark] = useState({
+        likes: 0,
+        dislikes: 0
+    })
     const [like, setLike] = useState(0);
     const [token, setToken] = useState(videoToken);
+    const [markLoad, setMarkLoad] = useState(false);
+
+
+    function loadMarks() {
+        setMarkLoad(true);
+        if (auth) {
+            API.get(`/marks/${videoToken}/user/${userDetails.user.id}`)
+                .then((response) => {
+                        const mark = response.data.data;
+                        setMarkLoad(false);
+                        setMark({
+                            likes: mark.likes,
+                            dislikes: mark.dislikes
+                        });
+                        setLike(mark.markOwner);
+                    },
+                    (error) => {
+                        enqueueSnackbar("Произошла ошибка при загрузке лайков", { variant: "error"})
+                    })
+        } else {
+            API.get(`/marks/${videoToken}`)
+                .then((response) => {
+                        const mark = response.data.data;
+                        setMarkLoad(false);
+                        setMark({
+                            likes: mark.likes,
+                            dislikes: mark.dislikes
+                        });
+                        setLike(0);
+                    },
+                    (error) => {
+                        enqueueSnackbar("Произошла ошибка при загрузке лайков", { variant: "error"})
+                    })
+        }
+    }
+
+    function changeMark(mark) {
+        setMarkLoad(true);
+        const data = {
+            videoId: videoToken,
+            userId: userDetails.user.id,
+            mark: mark
+        }
+        API.post('/marks/', data)
+            .then((response) => {
+                    const mark = response.data.data;
+                    setMarkLoad(false);
+                    setMark({
+                        likes: mark.likes,
+                        dislikes: mark.dislikes
+                    });
+                    setLike(mark.markOwner);
+            },
+                (error) => {
+                    enqueueSnackbar("Произошла ошибка при установки лайка", { variant: "error"})
+                    setMarkLoad(false);
+                    setLike(0);
+                    setMarkLoad(false);
+                });
+    }
 
 
     useEffect(() => {
@@ -45,8 +112,10 @@ function CardVideo(props) {
                 console.log(res.data.data);
                 setVideoData(res.data.data);
                 setIsLoaded(true);
+                loadMarks();
             },
                 (error) => {
+                    enqueueSnackbar("Произошла ошибка", { variant: "error"})
                 })
             .catch(() => {
             });
@@ -54,19 +123,19 @@ function CardVideo(props) {
 
     function handleLike() {
         if (like === 1) {
-            setLike(0);
+            changeMark(0);
         }
         else {
-            setLike(1);
+            changeMark(1);
         }
     }
 
     function handleDislike() {
         if (like === -1) {
-            setLike(0);
+            changeMark(0);
         }
         else {
-            setLike(-1);
+            changeMark(-1);
         }
     }
 
@@ -81,19 +150,31 @@ function CardVideo(props) {
                 title={videoData.name}
                 subheader={
                     <React.Fragment>
-                        {videoData.views + " просмотров"}
+                        <Typography
+                            gutterBottom
+                            variant="subtitle1"
+                        >
+                            {videoData.views + " просмотров"}
+                        </Typography>
                         <Typography
                             variant="subtitle2"
                         >
                             {new Date(videoData.createDate).toLocaleDateString()}
                         </Typography>
+                        {videoData.isPrivate &&
+                        <Typography
+                            variant="subtitle2"
+                        >
+                            {"Это приватное видео"}
+                        </Typography>
+                        }
                     </React.Fragment>
                 }
                 action={
                     <React.Fragment>
                         <IconButton
                             color={like === 1 ? "primary" : "default"}
-                            disabled={!auth}
+                            disabled={!auth || markLoad}
                             onClick={handleLike}
                         >
                             <ThumbUp />
@@ -103,11 +184,11 @@ function CardVideo(props) {
                             style={{display: 'inline'}}
                             color="textSecondary"
                         >
-                            1000
+                            {mark.likes}
                         </Typography>
                         <IconButton
                             color={like === -1 ? "primary" : "default"}
-                            disabled={!auth}
+                            disabled={!auth || markLoad}
                             onClick={handleDislike}
                         >
                             <ThumbDown />
@@ -117,11 +198,12 @@ function CardVideo(props) {
                             color="textSecondary"
                             style={{display: 'inline'}}
                         >
-                            1000
+                            {mark.dislikes}
                         </Typography>
                     </React.Fragment>
                 }
             />
+            <Divider variant="middle" />
             <CardHeader
                 avatar={
                     <Avatar aria-label="recipe">

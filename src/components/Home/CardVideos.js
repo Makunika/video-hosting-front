@@ -32,16 +32,11 @@ function CardVideo(props) {
         <Grid item xs="auto">
             <Card className={classes.card}>
                 <CardActionArea onClick={() => history.push("/video/" + props.item.id)} >
-                    <CardMedia
-                        className={classes.card_img}
-                        image="https://static-cse.canva.com/blob/241536/%D0%9E%D1%81%D0%B5%D0%BD%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D0%BE%D0%B8-%D0%BD%D0%B0-%D1%80%D0%B0%D0%B1%D0%BE%D1%87%D0%B8%D0%B9-%D1%81%D1%82%D0%BE%D0%BB-%D0%BE%D1%82%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5.png"
-                        title="Contemplative Reptile"
-                    />
                     <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
-                            {props.item.id}
+                        <Typography gutterBottom variant="h5">
+                            {props.item.name}
                         </Typography>
-                        <Typography variant="h5" component="h5">
+                        <Typography variant="subtitle2">
                             {props.item.user.name}
                         </Typography>
                     </CardContent>

@@ -90,7 +90,7 @@ function CardComments(props) {
                 {auth &&
                 <Grid item xs >
                     <TextField
-                        variant="standard"
+                        variant="outlined"
                         margin="normal"
                         fullWidth={true}
                         multiline
@@ -102,10 +102,6 @@ function CardComments(props) {
                         value={text}
                         autoComplete="off"
                     />
-                </Grid>
-                }
-                {auth &&
-                <Grid item xs={12} lg={3} >
                     <Button
                         color="primary"
                         variant="outlined"
@@ -143,7 +139,12 @@ function ListComments(props) {
         return new Date(b.createDate) - new Date(a.createDate);
     })
     return (
-        <List className={classes.root} subheader={<ListSubheader>Комментарии</ListSubheader>}>
+        <List className={classes.root} subheader={
+            <React.Fragment>
+                <ListSubheader>Комментарии</ListSubheader>
+                <Divider variant="fullWidth" />
+            </React.Fragment>
+        }>
             {
                 Array.prototype.map.call(list, function (item, index) {
                     return (

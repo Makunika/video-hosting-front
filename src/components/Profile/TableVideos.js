@@ -84,6 +84,9 @@ function EnhancedTableHead(props) {
                     </TableCell>
                 ))}
                 <TableCell>
+                    Тип
+                </TableCell>
+                <TableCell>
                     Действия
                 </TableCell>
             </TableRow>
@@ -142,7 +145,7 @@ export default function EnhancedTable() {
                 console.log(response.data.data);
                 const r = [];
                 Array.prototype.map.call(response.data.data, function (item) {
-                    r.push(createData(item.id, item.name, item.views, 100, 100))
+                    r.push(createData(item.id, item.name, item.views, item.likes, item.dislikes))
                 })
                 setRows(r);
             },
@@ -160,7 +163,7 @@ export default function EnhancedTable() {
                 enqueueSnackbar("Успешное удаление", {variant: "success"});
                 const r = [];
                 Array.prototype.map.call(response.data.data, function (item) {
-                    r.push(createData(item.id, item.name, 100, 100, 100))
+                    r.push(createData(item.id, item.name, item.views, item.likes, item.dislikes))
                 })
                 setRows(r);
             },
@@ -203,6 +206,7 @@ export default function EnhancedTable() {
                                             <TableCell align="right">{row.views}</TableCell>
                                             <TableCell align="right">{row.likes}</TableCell>
                                             <TableCell align="right">{row.dislikes}</TableCell>
+                                            <TableCell align="right">{!row.isPrivate ? "Публичное" : "Приватное"}</TableCell>
                                             <TableCell>
                                                 <IconButton size="small">
                                                     <EditIcon />
