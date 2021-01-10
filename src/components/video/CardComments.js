@@ -28,6 +28,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 function CardComments(props) {
     const userId = props.userId;
     const videoId = props.videoId;
+    const isAdmin = props.isAdmin;
     const { enqueueSnackbar } = useSnackbar();
     const auth = props.auth;
     const [list, setList] = useState([]);
@@ -112,7 +113,7 @@ function CardComments(props) {
                 </Grid>
                 }
                 <Grid item xs  >
-                    { loading ? <ListComments list={list}  /> : <CircularProgress /> }
+                    { loading ? <ListComments isAdmin={isAdmin} list={list}  /> : <CircularProgress /> }
                 </Grid>
             </Grid>
         </Paper>
@@ -131,13 +132,27 @@ const useStyles = makeStyles((theme) => ({
 
 function ListComments(props) {
     const classes = useStyles();
-    const list = props.list.map((item) => {
+    const { enqueueSnackbar } = useSnackbar();
+    const [list, setList] = useState(props.list.map((item) => {
         item.createDate = new Date(item.createDate);
         return item;
-    })
-    list.sort((a, b) => {
+    }).sort((a, b) => {
         return new Date(b.createDate) - new Date(a.createDate);
-    })
+    }));
+
+    function deleteComment(item, index) {
+        API.delete("/comments/" + item.id)
+            .then((res) => {
+                const l = list.slice();
+                const removed = l.splice(index, 1);
+                setList(l);
+                enqueueSnackbar(`Комменатрий ${removed[0].text} удален`, { variant: "success" });
+            },
+                (error) => {
+                enqueueSnackbar("Комменатрий не может быть удален", { variant: "warning" });
+            })
+    }
+
     return (
         <List className={classes.root} subheader={
             <React.Fragment>
@@ -152,7 +167,7 @@ function ListComments(props) {
                         <ListItem alignItems="flex-start">
                             <ListItemAvatar>
                                 <Avatar>
-                                    A
+                                    {item.user.name[0].toUpperCase()}
                                 </Avatar>
                             </ListItemAvatar>
                             <ListItemText
@@ -181,11 +196,12 @@ function ListComments(props) {
                                     </Typography>
                                 }
                             />
+                            {props.isAdmin &&
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" aria-label="delete">
+                                <IconButton edge="end" aria-label="delete" onClick={() => deleteComment(item, index)}>
                                     <Delete />
                                 </IconButton>
-                            </ListItemSecondaryAction>
+                            </ListItemSecondaryAction> }
                         </ListItem>
                             {index !== list.length - 1 && <Divider variant="fullWidth" />}
                         </React.Fragment>
@@ -193,40 +209,6 @@ function ListComments(props) {
                 })
             }
         </List>
-    )
-}
-
-
-
-function Comment_(props) {
-    const text = props.text;
-    const user = props.user;
-
-    return (
-        <React.Fragment>
-            <Card>
-                <CardHeader
-                    avatar={
-                        <Avatar aria-label="recipe" style={{backgroundColor: orange}}>
-                            A
-                        </Avatar>
-                    }
-                    title={user.name}
-                    subheader="September 14, 2016"
-                />
-                <CardContent>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        {text}
-                    </Typography>
-                </CardContent>
-                <CardActions>
-                    {/*<IconButton aria-label="share">*/}
-                    {/*    <Delete />*/}
-                    {/*</IconButton>*/}
-                </CardActions>
-            </Card>
-            <Divider variant="middle" />
-        </React.Fragment>
     )
 }
 

@@ -12,19 +12,6 @@ import API from "../../utils/API";
 import {useSnackbar} from "notistack";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -166,9 +153,6 @@ export default function Register(props) {
                     </Grid>
                 </ValidatorForm>
             </div>
-            <Box mt={5}>
-                <Copyright />
-            </Box>
         </Container>
     );
 }

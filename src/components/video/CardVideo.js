@@ -12,6 +12,8 @@ import {ThumbDown, ThumbUp} from "@material-ui/icons";
 import {useAuthState} from "../../Context";
 import {useSnackbar} from "notistack";
 import Divider from "@material-ui/core/Divider";
+import CardActions from "@material-ui/core/CardActions";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles({
     video: {
@@ -22,7 +24,7 @@ const useStyles = makeStyles({
 
 function CardVideo(props) {
 
-    const videoToken = props.videoToken;
+    const [videoToken] = useState(props.videoToken);
     const userDetails = useAuthState();
     const auth = userDetails.token !== '';
     const classes = useStyles();
@@ -207,7 +209,7 @@ function CardVideo(props) {
             <CardHeader
                 avatar={
                     <Avatar aria-label="recipe">
-                        R
+                        {videoData.user.name[0].toUpperCase()}
                     </Avatar>
                 }
                 title={videoData.user.name}/>
@@ -216,6 +218,11 @@ function CardVideo(props) {
                     {videoData.about}
                 </Typography>
             </CardContent>
+            {userDetails.user.isAdmin === true &&
+            <CardActions>
+                <Button color="primary">Удалить видео</Button>
+            </CardActions>}
+
         </Card>
     );
 

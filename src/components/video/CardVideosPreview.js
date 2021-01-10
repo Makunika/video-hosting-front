@@ -29,7 +29,10 @@ function CardVideo(props) {
 
     return (
         <Card className={classes.add}>
-            <CardActionArea onClick={() => history.push("/video/" + props.item.id)} >
+            <CardActionArea onClick={() => {
+                history.push("/video/" + props.item.id);
+                history.go(0)
+            }} >
                 <CardContent>
                     <Typography gutterBottom variant="subtitle1">
                         {props.item.name}

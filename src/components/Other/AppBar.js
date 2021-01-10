@@ -18,6 +18,8 @@ import {ExitToApp, VideoCall} from "@material-ui/icons";
 import {Link, useHistory} from "react-router-dom";
 import {checkAuth, logout} from "../../Context/actions";
 import {useAuthDispatch, useAuthState} from "../../Context";
+import Paper from "@material-ui/core/Paper";
+import CustomizedSearch from "./CustomSearch";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -41,40 +43,12 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer'
     },
     search: {
-        position: 'relative',
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: fade(theme.palette.common.white, 0.15),
-        '&:hover': {
-            backgroundColor: fade(theme.palette.common.white, 0.25),
-        },
         marginRight: theme.spacing(2),
         marginLeft: theme.spacing(2),
         width: '100%',
         [theme.breakpoints.up('sm')]: {
             marginLeft: theme.spacing(3),
             width: 'auto',
-        },
-    },
-    searchIcon: {
-        padding: theme.spacing(0, 2),
-        height: '100%',
-        position: 'absolute',
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    inputRoot: {
-        color: 'inherit',
-    },
-    inputInput: {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('md')]: {
-            width: '20ch',
         },
     },
     sectionDesktop: {
@@ -97,12 +71,10 @@ export default function PrimarySearchAppBar() {
     const userDetails = useAuthState();
     const auth = userDetails.token !== '';
     useEffect(() => checkAuth(dispatch), []);
-    const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
 
 
-    const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const history = useHistory();
 
@@ -189,24 +161,14 @@ export default function PrimarySearchAppBar() {
         <div className={classes.grow}>
             <AppBar position="static">
                 <Toolbar>
-                    <Typography className={classes.title} variant="h6" noWrap onClick={() => {history.push("/")}}>
+                    <Typography className={classes.title} variant="h6" noWrap onClick={() => {history.push("/"); history.go(0)}}>
                         Tronica
                     </Typography>
-                    <Typography className={classes.titleOne} variant="h5" onClick={() => {history.push("/")}}>
+                    <Typography className={classes.titleOne} variant="h5" onClick={() => {history.push("/"); history.go(0)}}>
                         T
                     </Typography>
                     <div className={classes.search}>
-                        <div className={classes.searchIcon}>
-                            <SearchIcon />
-                        </div>
-                        <InputBase
-                            placeholder="Поиск…"
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
+                        <CustomizedSearch />
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>

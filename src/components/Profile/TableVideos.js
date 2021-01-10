@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,9 +16,17 @@ import {useAuthState} from "../../Context";
 import {useSnackbar} from "notistack";
 import API from "../../utils/API";
 import {useHistory} from "react-router";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import TextField from "@material-ui/core/TextField";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import {Divider} from "@material-ui/core";
 
-function createData(id,name, views, likes, dislikes) {
-    return { id ,name, views, likes, dislikes };
+function createData(id,name, views, likes, dislikes, about) {
+    return { id ,name, views, likes, dislikes, about };
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -120,10 +128,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable() {
     const classes = useStyles();
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('calories');
-    const [page, setPage] = React.useState(0);
-    const [rows, setRows] = React.useState([]);
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('calories');
+    const [page, setPage] = useState(0);
+    const [rows, setRows] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [currentRow, setCurrentRow] = useState(null);
     const userDetails = useAuthState();
     const { enqueueSnackbar } = useSnackbar();
     const rowsPerPage = 8;
@@ -139,20 +149,24 @@ export default function EnhancedTable() {
         setPage(newPage);
     };
 
-    useEffect(() => {
+    function loadRows() {
         API.get("videos/user/" + userDetails.user.id)
             .then((response) => {
-                console.log(response.data.data);
-                const r = [];
-                Array.prototype.map.call(response.data.data, function (item) {
-                    r.push(createData(item.id, item.name, item.views, item.likes, item.dislikes))
-                })
-                setRows(r);
-            },
+                    console.log(response.data.data);
+                    const r = [];
+                    Array.prototype.map.call(response.data.data, function (item) {
+                        r.push(createData(item.id, item.name, item.views, item.likes, item.dislikes, item.about))
+                    })
+                    setRows(r);
+                },
                 (error) => {
                     console.log(error);
                     enqueueSnackbar("Произошла ошибка", {variant: "error"});
                 })
+    }
+
+    useEffect(() => {
+        loadRows();
     },[])
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
@@ -161,16 +175,23 @@ export default function EnhancedTable() {
         API.delete("videos/" + id)
             .then((response) => {
                 enqueueSnackbar("Успешное удаление", {variant: "success"});
-                const r = [];
-                Array.prototype.map.call(response.data.data, function (item) {
-                    r.push(createData(item.id, item.name, item.views, item.likes, item.dislikes))
-                })
-                setRows(r);
+                loadRows();
             },
                 (error) => {
                     console.log(error);
                     enqueueSnackbar("Произошла ошибка при удалении", {variant: "error"});
                 })
+    }
+
+    function openEditVideo(row) {
+        setCurrentRow(row);
+        setOpen(true);
+    }
+
+    function closeEditVideo() {
+        setOpen(false);
+        setCurrentRow(null);
+        loadRows();
     }
 
     return (
@@ -208,7 +229,10 @@ export default function EnhancedTable() {
                                             <TableCell align="right">{row.dislikes}</TableCell>
                                             <TableCell align="right">{!row.isPrivate ? "Публичное" : "Приватное"}</TableCell>
                                             <TableCell>
-                                                <IconButton size="small">
+                                                <IconButton 
+                                                    size="small"
+                                                    onClick={() => {openEditVideo(row)}}
+                                                >
                                                     <EditIcon />
                                                 </IconButton>
                                                 <IconButton
@@ -232,12 +256,93 @@ export default function EnhancedTable() {
                     rowsPerPageOptions={rowsPerPage}
                     component="div"
                     count={rows.length}
-                    rows
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onChangePage={handleChangePage}
                 />
             </Paper>
+            <EditVideo handleClose={closeEditVideo} open={open} row={currentRow} />
         </div>
     );
+}
+
+function EditVideo(props) {
+    let data = {
+        name: '',
+        about: ''
+    }
+    if (props.row != null) {
+        console.log(props.row)
+        data.name = props.row.name;
+        data.about = props.row.about;
+    }
+    const [formData, setFormData] = useState({
+        about: data.about,
+        name: data.name
+    });
+    const { enqueueSnackbar } = useSnackbar();
+
+    const handleButton = async () => {
+
+        await API.put(`/videos/${props.row.id}`, formData)
+            .then((data) => {
+                    enqueueSnackbar("Успешно", { variant: 'success' });
+                },
+                (error) => {
+                    enqueueSnackbar("Изменение не удалось", { variant: 'error' });
+                });
+
+
+        props.handleClose();
+    }
+
+    function changeInput(event) {
+        const formData1 = {
+            about: formData.about,
+            name: formData.name
+        };
+        formData1[event.target.name] = event.target.value;
+        setFormData(formData1);
+    }
+
+    return (
+        <Dialog open={props.open} onClose={props.handleClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">{"Редактирование видео '" + data.name + "'"}</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Изменение полей видео
+                </DialogContentText>
+                <TextField
+                    label="Название"
+                    variant="outlined"
+                    fullWidth
+                    onChange={changeInput}
+                    name="name"
+                    style={{marginBottom: 10}}
+                >
+                    {data.name}
+                </TextField>
+                <Divider variant={"fullWidth"} style={{marginBottom: 10}}/>
+                <TextField
+                    label="Описание"
+                    variant="outlined"
+                    fullWidth
+                    onChange={changeInput}
+                    name="about"
+                    multiline
+                    rowsMax={10}
+                >
+                    {data.about}
+                </TextField>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={props.handleClose} color="primary">
+                    Отмена
+                </Button>
+                <Button onClick={handleButton} color="primary">
+                    Применить
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
 }

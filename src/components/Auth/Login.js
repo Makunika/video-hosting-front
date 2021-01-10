@@ -19,19 +19,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import API from "../../utils/API";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -59,6 +46,7 @@ export default function Login(props) {
     const classes = useStyles();
     const history = useHistory();
     const { enqueueSnackbar } = useSnackbar();
+    const [open, setOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         login: '',
@@ -66,7 +54,7 @@ export default function Login(props) {
     })
 
     const dispatch = useAuthDispatch();
-    const { loading, errorMessage } = useAuthState();
+    const { loading } = useAuthState();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -88,7 +76,7 @@ export default function Login(props) {
         }
     };
 
-    const [open, setOpen] = useState(false);
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -109,7 +97,6 @@ export default function Login(props) {
 
     return (
         <Container maxWidth="sm">
-            <CssBaseline />
             <div className={classes.paper}>
                 <Typography component="h1" variant="h5">
                     Войти
@@ -171,9 +158,6 @@ export default function Login(props) {
                     </Grid>
                 </ValidatorForm>
             </div>
-            <Box mt={8}>
-                <Copyright />
-            </Box>
             <ResetPassword handleClose={handleClose} open={open} />
         </Container>
     );
