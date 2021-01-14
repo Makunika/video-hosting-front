@@ -9,8 +9,8 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
-import {useAuthState} from "../../Context";
-import API from "../../utils/API";
+import API from "../utils/API";
+import {useAuthState} from "../context";
 
 function CircularProgressWithLabel(props) {
     return (
@@ -47,7 +47,7 @@ const userStyle = makeStyles((theme) => ({
     }
 }));
 
-export default function NewVideo() {
+export default function NewVideoPage() {
     const classes = userStyle();
     const { enqueueSnackbar } = useSnackbar();
     const userDetails = useAuthState();

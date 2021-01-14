@@ -7,13 +7,14 @@ import Card from "@material-ui/core/Card";
 import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import API from "../../utils/API";
-import Loading from "../Other/Loading";
 import {ThumbDown, ThumbUp} from "@material-ui/icons";
-import {useAuthState} from "../../Context";
+import {useAuthState} from "../../context";
 import {useSnackbar} from "notistack";
 import Divider from "@material-ui/core/Divider";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
+import {useHistory} from "react-router";
+import Loading from "../../components/Loading";
 
 const useStyles = makeStyles({
     video: {
@@ -22,13 +23,14 @@ const useStyles = makeStyles({
     }
 })
 
-function CardVideo(props) {
+function CardVideoLayout(props) {
 
     const [videoToken] = useState(props.videoToken);
     const userDetails = useAuthState();
     const auth = userDetails.token !== '';
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
+    const history = useHistory();
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [videoData, setVideoData] = useState({
@@ -45,7 +47,7 @@ function CardVideo(props) {
         dislikes: 0
     })
     const [like, setLike] = useState(0);
-    const [token, setToken] = useState(videoToken);
+    const [token] = useState(videoToken);
     const [markLoad, setMarkLoad] = useState(false);
 
 
@@ -105,6 +107,18 @@ function CardVideo(props) {
                     setLike(0);
                     setMarkLoad(false);
                 });
+    }
+
+    function deleteVideo() {
+        API.delete("videos/" + videoToken)
+            .then((response) => {
+                    enqueueSnackbar("Успешное удаление", {variant: "success"});
+                    history.push("/");
+                },
+                (error) => {
+                    console.log(error);
+                    enqueueSnackbar("Произошла ошибка при удалении", {variant: "error"});
+                })
     }
 
 
@@ -208,11 +222,11 @@ function CardVideo(props) {
             <Divider variant="middle" />
             <CardHeader
                 avatar={
-                    <Avatar aria-label="recipe">
+                    <Avatar onClick={() => history.push("/user/" + videoData.user.id)} style={{cursor: 'pointer'}}>
                         {videoData.user.name[0].toUpperCase()}
                     </Avatar>
                 }
-                title={videoData.user.name}/>
+                title={<div onClick={() => history.push("/user/" + videoData.user.id)} style={{cursor: 'pointer'}}>{videoData.user.name}</div>}/>
             <CardContent>
                 <Typography>
                     {videoData.about}
@@ -220,9 +234,8 @@ function CardVideo(props) {
             </CardContent>
             {userDetails.user.isAdmin === true &&
             <CardActions>
-                <Button color="primary">Удалить видео</Button>
+                <Button color="secondary" onClick={deleteVideo}>Удалить видео</Button>
             </CardActions>}
-
         </Card>
     );
 
@@ -230,4 +243,4 @@ function CardVideo(props) {
 
 }
 
-export default CardVideo;
+export default CardVideoLayout;

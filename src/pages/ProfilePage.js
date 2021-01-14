@@ -1,11 +1,10 @@
-import {useAuthDispatch} from "../../Context";
 import React, {useEffect} from "react";
-import {checkAuth} from "../../Context/actions";
-import {Button, ButtonGroup, Container, Grid, makeStyles, Typography} from "@material-ui/core";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import EnhancedTable from "../../components/Profile/TableVideos";
-import EditProfile from "../../components/Profile/EditProfile";
+import {Button, Container, Grid, makeStyles, Typography} from "@material-ui/core";
 import {useHistory} from "react-router";
+import TableVideosLayout from "../layouts/profile/TableVideosLayout";
+import EditProfileLayout from "../layouts/profile/EditProfileLayout";
+import {useAuthDispatch} from "../context";
+import {checkAuth} from "../context/actions";
 
 
 const useStyle = makeStyles((theme) => ({
@@ -23,34 +22,29 @@ const useStyle = makeStyles((theme) => ({
     }
 }));
 
-export default function Profile() {
+export default function ProfilePage() {
     const classes = useStyle();
     const dispatch = useAuthDispatch();
     const history = useHistory();
     useEffect(() => checkAuth(dispatch), []);
 
-    const handleEditProfile = () => {
-
-    }
-
     return (
         <Container maxWidth="lg">
-            <CssBaseline />
             <Grid container className={classes.paper} spacing={4}>
                 <Grid item xs={12}>
-                    <Typography variant="h4" className={classes.headers}>
+                    <Typography variant="h4" className={classes.headers} color="textPrimary">
                         Ваш профиль
                     </Typography>
-                    <EditProfile />
+                    <EditProfileLayout />
                 </Grid>
                 <Grid item xs={12}>
                     <div className={classes.addVideo}>
-                        <Typography variant="h4">
+                        <Typography variant="h4" color="textPrimary">
                             Ваши видео
                         </Typography>
                         <Button color="primary" variant="text" onClick={() => history.push("/new")}>Добавить видео</Button>
                     </div>
-                    <EnhancedTable />
+                    <TableVideosLayout />
                 </Grid>
             </Grid>
         </Container>

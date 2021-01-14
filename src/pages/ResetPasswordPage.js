@@ -7,7 +7,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import API from "../../utils/API";
+import API from "../utils/API";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -29,7 +29,7 @@ function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
 
-export default function Reset() {
+export default function ResetPasswordPage() {
     const query = useQuery();
     const { enqueueSnackbar } = useSnackbar();
     const history = useHistory();

@@ -2,12 +2,7 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import React, {useEffect, useState} from "react";
 import {Delete} from "@material-ui/icons";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import Avatar from "@material-ui/core/Avatar";
-import CardHeader from "@material-ui/core/CardHeader";
-import Card from "@material-ui/core/Card";
-import {orange} from "@material-ui/core/colors";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
@@ -23,9 +18,10 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import ListSubheader from "@material-ui/core/ListSubheader";
+import {useHistory} from "react-router";
 
 
-function CardComments(props) {
+function CardCommentsLayout(props) {
     const userId = props.userId;
     const videoId = props.videoId;
     const isAdmin = props.isAdmin;
@@ -133,6 +129,7 @@ const useStyles = makeStyles((theme) => ({
 function ListComments(props) {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
+    const history = useHistory();
     const [list, setList] = useState(props.list.map((item) => {
         item.createDate = new Date(item.createDate);
         return item;
@@ -163,17 +160,19 @@ function ListComments(props) {
             {
                 Array.prototype.map.call(list, function (item, index) {
                     return (
-                        <React.Fragment>
+                        <React.Fragment key={index}>
                         <ListItem alignItems="flex-start">
                             <ListItemAvatar>
-                                <Avatar>
+                                <Avatar onClick={() => history.push("/user/" + item.user.id)} style={{cursor: 'pointer'}}>
                                     {item.user.name[0].toUpperCase()}
                                 </Avatar>
                             </ListItemAvatar>
                             <ListItemText
                                 primary={
                                     <React.Fragment>
-                                        {item.user.name}
+                                        <div onClick={() => history.push("/user/" + item.user.id)} style={{cursor: 'pointer', display: 'inline'}}>
+                                            {item.user.name}
+                                        </div>
                                         <Typography
                                             component="span"
                                             variant="subtitle2"
@@ -213,4 +212,4 @@ function ListComments(props) {
 }
 
 
-export default CardComments;
+export default CardCommentsLayout;

@@ -1,25 +1,19 @@
 import React, {useEffect} from 'react';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import {ExitToApp, VideoCall} from "@material-ui/icons";
-import {Link, useHistory} from "react-router-dom";
-import {checkAuth, logout} from "../../Context/actions";
-import {useAuthDispatch, useAuthState} from "../../Context";
-import Paper from "@material-ui/core/Paper";
-import CustomizedSearch from "./CustomSearch";
+import {useHistory} from "react-router-dom";
+import {logout, useAuthDispatch, useAuthState} from "../context";
+import {checkAuth} from "../context/actions";
+import CustomizedSearch from "../components/CustomSearch";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -161,10 +155,18 @@ export default function PrimarySearchAppBar() {
         <div className={classes.grow}>
             <AppBar position="static">
                 <Toolbar>
-                    <Typography className={classes.title} variant="h6" noWrap onClick={() => {history.push("/"); history.go(0)}}>
+                    <Typography className={classes.title} variant="h6" noWrap onClick={() => {
+                        const go = window.location.pathname === "/";
+                        history.push("/");
+                        if (go) history.go(0);
+                    }}>
                         Tronica
                     </Typography>
-                    <Typography className={classes.titleOne} variant="h5" onClick={() => {history.push("/"); history.go(0)}}>
+                    <Typography className={classes.titleOne} variant="h5" onClick={() => {
+                        const go = window.location.pathname === "/";
+                        history.push("/");
+                        if (go) history.go(0);
+                    }}>
                         T
                     </Typography>
                     <div className={classes.search}>

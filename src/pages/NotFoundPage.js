@@ -1,10 +1,9 @@
-import {Grid, Typography} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import React, {useEffect} from "react";
 import Container from "@material-ui/core/Container";
 import {makeStyles} from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import {useAuthDispatch, useAuthState} from "../../Context";
-import {checkAuth} from "../../Context/actions";
+import {useAuthDispatch, useAuthState} from "../context";
+import {checkAuth} from "../context/actions";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function NotFound() {
+function NotFoundPage() {
     const classes = useStyles();
     const dispatch = useAuthDispatch();
     const userDetails = useAuthState();
@@ -26,9 +25,8 @@ function NotFound() {
     useEffect(() => checkAuth(dispatch), []);
     return (
         <Container maxWidth="sm">
-            <CssBaseline />
             <div className={classes.paper}>
-                <Typography component="h1" variant="h1" className={classes.font}>
+                <Typography component="h1" variant="h1" className={classes.font} color="textPrimary">
                     Страница не найдена
                 </Typography>
             </div>
@@ -37,4 +35,4 @@ function NotFound() {
     )
 }
 
-export default NotFound;
+export default NotFoundPage;

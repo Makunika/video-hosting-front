@@ -1,28 +1,32 @@
 import {createMuiTheme, ThemeProvider} from "@material-ui/core/styles";
 import orange from "@material-ui/core/colors/orange";
-import grey from "@material-ui/core/colors/grey";
 import React from "react";
 import {Route, Switch} from "react-router-dom";
-import Video from "./view/video";
-import HomePage from "./view/Home";
-import PrimarySearchAppBar from "./components/Other/AppBar";
+import VideoPage from "./pages/VideoPage";
+import HomePage from "./pages/HomePage";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Container from "@material-ui/core/Container";
-import AuthPage from "./view/Auth";
-import NotFound from "./view/404/NotFound";
-import {AuthProvider, useAuthState} from "./Context";
+import {AuthProvider, useAuthState} from "./context";
 import {SnackbarProvider} from "notistack";
-import Reset from "./view/Reset";
-import Profile from "./view/Profile";
 import * as locales from '@material-ui/core/locale';
-import NewVideo from "./view/NewVideo";
+import PrimarySearchAppBar from "./layouts/AppBar";
+import AuthPage from "./pages/AuthPage";
+import NewVideoPage from "./pages/NewVideoPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ProfilePage from "./pages/ProfilePage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import UserPage from "./pages/UserPage";
+import pink from "@material-ui/core/colors/pink";
 
 const theme = createMuiTheme({
   palette: {
       primary: orange,
-      secondary: grey,
-      info: grey,
-      type: 'dark'
+      secondary: pink,
+      type: 'dark',
+      text: {
+          primary: "#ffffff",
+          secondary: "#b8b8b8"
+      }
   },
   breakpoints: {
     values: {
@@ -48,21 +52,24 @@ function Routing() {
 
     return (
         <Switch>
-            <Route path="/video/:videoToken" children={<Video />} />
+            <Route path="/video/:videoToken" children={<VideoPage />} />
             <Route exact path="/" children={<HomePage />} />
             {
                 !auth && <Route path="/auth" children={<AuthPage />} />
             }
             {
-                !auth && <Route path="/reset" children={<Reset />} />
+                !auth && <Route path="/reset" children={<ResetPasswordPage />} />
             }
             {
-                auth && <Route path="/profile" children={<Profile />} />
+                auth && <Route path="/profile" children={<ProfilePage />} />
             }
             {
-                auth && <Route path="/new" children={<NewVideo />} />
+                auth && <Route path="/new" children={<NewVideoPage />} />
             }
-            <Route children={<NotFound />} />
+            {
+                auth && <Route path="/user/:userId" children={<UserPage />} />
+            }
+            <Route children={<NotFoundPage />} />
         </Switch>
     )
 }

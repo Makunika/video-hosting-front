@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,7 +12,7 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {useAuthState} from "../../Context";
+import {useAuthState} from "../../context";
 import {useSnackbar} from "notistack";
 import API from "../../utils/API";
 import {useHistory} from "react-router";
@@ -24,9 +24,12 @@ import TextField from "@material-ui/core/TextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import {Divider} from "@material-ui/core";
+import {CheckBox} from "@material-ui/icons";
+import Switch from "@material-ui/core/Switch";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-function createData(id,name, views, likes, dislikes, about) {
-    return { id ,name, views, likes, dislikes, about };
+function createData(id,name, views, likes, dislikes, about, isPrivate) {
+    return { id ,name, views, likes, dislikes, about, isPrivate };
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -91,7 +94,7 @@ function EnhancedTableHead(props) {
                         </TableSortLabel>
                     </TableCell>
                 ))}
-                <TableCell>
+                <TableCell align="right">
                     Тип
                 </TableCell>
                 <TableCell>
@@ -126,14 +129,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function EnhancedTable() {
+export default function TableVideosLayout() {
     const classes = useStyles();
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('calories');
     const [page, setPage] = useState(0);
     const [rows, setRows] = useState([]);
     const [open, setOpen] = useState(false);
-    const [currentRow, setCurrentRow] = useState(null);
+    const [currentRow, setCurrentRow] = useState({
+        name: '',
+        id: 0,
+        about: '',
+        isPrivate: false
+    });
     const userDetails = useAuthState();
     const { enqueueSnackbar } = useSnackbar();
     const rowsPerPage = 8;
@@ -155,7 +163,7 @@ export default function EnhancedTable() {
                     console.log(response.data.data);
                     const r = [];
                     Array.prototype.map.call(response.data.data, function (item) {
-                        r.push(createData(item.id, item.name, item.views, item.likes, item.dislikes, item.about))
+                        r.push(createData(item.id, item.name, item.views, item.likes, item.dislikes, item.about, item.isPrivate))
                     })
                     setRows(r);
                 },
@@ -190,7 +198,6 @@ export default function EnhancedTable() {
 
     function closeEditVideo() {
         setOpen(false);
-        setCurrentRow(null);
         loadRows();
     }
 
@@ -221,13 +228,13 @@ export default function EnhancedTable() {
                                             hover
                                             role="checkbox"
                                             tabIndex={-1}
-                                            key={row.name}
+                                            key={row.id}
                                         >
                                             <TableCell style={{cursor: "pointer"}} onClick={() => { history.push("/video/" + row.id);}}>{row.name}</TableCell>
                                             <TableCell align="right">{row.views}</TableCell>
                                             <TableCell align="right">{row.likes}</TableCell>
                                             <TableCell align="right">{row.dislikes}</TableCell>
-                                            <TableCell align="right">{!row.isPrivate ? "Публичное" : "Приватное"}</TableCell>
+                                            <TableCell align="right">{row.isPrivate === false ? "Публичное" : "Приватное"}</TableCell>
                                             <TableCell>
                                                 <IconButton 
                                                     size="small"
@@ -261,53 +268,41 @@ export default function EnhancedTable() {
                     onChangePage={handleChangePage}
                 />
             </Paper>
-            <EditVideo handleClose={closeEditVideo} open={open} row={currentRow} />
+            <EditVideo
+                handleClose={closeEditVideo}
+                open={open}
+                row={currentRow}
+                handleChangeInput={(event) => {
+                    currentRow[event.target.name] = event.target.value;
+                    setCurrentRow({...currentRow});
+                }}
+                handlePrivate={() => {
+                    currentRow.isPrivate = !currentRow.isPrivate;
+                    setCurrentRow({...currentRow});
+                    console.log(currentRow)
+                }}
+                handleButton={() => {
+                    console.log(currentRow)
+                    API.put(`/videos/${currentRow.id}`, currentRow)
+                        .then((data) => {
+                                enqueueSnackbar("Успешно", { variant: 'success' });
+                                closeEditVideo();
+                            },
+                            (error) => {
+                                enqueueSnackbar("Изменение не удалось", { variant: 'error' });
+                                closeEditVideo();
+                            });
+                }}
+            />
         </div>
     );
 }
 
 function EditVideo(props) {
-    let data = {
-        name: '',
-        about: ''
-    }
-    if (props.row != null) {
-        console.log(props.row)
-        data.name = props.row.name;
-        data.about = props.row.about;
-    }
-    const [formData, setFormData] = useState({
-        about: data.about,
-        name: data.name
-    });
-    const { enqueueSnackbar } = useSnackbar();
-
-    const handleButton = async () => {
-
-        await API.put(`/videos/${props.row.id}`, formData)
-            .then((data) => {
-                    enqueueSnackbar("Успешно", { variant: 'success' });
-                },
-                (error) => {
-                    enqueueSnackbar("Изменение не удалось", { variant: 'error' });
-                });
-
-
-        props.handleClose();
-    }
-
-    function changeInput(event) {
-        const formData1 = {
-            about: formData.about,
-            name: formData.name
-        };
-        formData1[event.target.name] = event.target.value;
-        setFormData(formData1);
-    }
 
     return (
         <Dialog open={props.open} onClose={props.handleClose} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">{"Редактирование видео '" + data.name + "'"}</DialogTitle>
+            <DialogTitle id="form-dialog-title">{"Редактирование видео '" + props.row.name + "'"}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
                     Изменение полей видео
@@ -316,30 +311,34 @@ function EditVideo(props) {
                     label="Название"
                     variant="outlined"
                     fullWidth
-                    onChange={changeInput}
+                    onChange={props.handleChangeInput}
                     name="name"
                     style={{marginBottom: 10}}
+                    value={props.row.name}
                 >
-                    {data.name}
                 </TextField>
                 <Divider variant={"fullWidth"} style={{marginBottom: 10}}/>
                 <TextField
                     label="Описание"
                     variant="outlined"
                     fullWidth
-                    onChange={changeInput}
+                    onChange={props.handleChangeInput}
                     name="about"
                     multiline
                     rowsMax={10}
+                    value={props.row.about}
                 >
-                    {data.about}
                 </TextField>
+                <FormControlLabel
+                    control={<Switch checked={props.row.isPrivate} onChange={props.handlePrivate} name="privateVideo" />}
+                    label="Приватное видео"
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.handleClose} color="primary">
                     Отмена
                 </Button>
-                <Button onClick={handleButton} color="primary">
+                <Button onClick={props.handleButton} color="primary">
                     Применить
                 </Button>
             </DialogActions>

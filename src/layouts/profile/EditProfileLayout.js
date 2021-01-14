@@ -7,9 +7,9 @@ import {PhotoCamera} from "@material-ui/icons";
 import TextField from "@material-ui/core/TextField";
 import {useSnackbar} from "notistack";
 import IconButton from "@material-ui/core/IconButton";
-import {useAuthDispatch, useAuthState} from "../../Context";
+import {useAuthDispatch, useAuthState} from "../../context";
 import API from "../../utils/API";
-import {changeUsername} from "../../Context/actions";
+import {changeUsername} from "../../context/actions";
 
 
 const useStyle = makeStyles((theme) => ({
@@ -23,7 +23,7 @@ const useStyle = makeStyles((theme) => ({
     }
 }));
 
-export default function EditProfile() {
+export default function EditProfileLayout() {
     const classes = useStyle();
     const userDetails = useAuthState();
     const dispatch = useAuthDispatch();
