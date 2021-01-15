@@ -49,10 +49,8 @@ export default function ResetPasswordPage() {
                 setLoading(false);
                 enqueueSnackbar("Пароль изменен", {variant: "success"});
                 history.push("/auth");
-            },
-                (error) => {
-                error = error.response;
-                enqueueSnackbar(error.error, {variant: "error"});
+            }, (error) => {
+                enqueueSnackbar(error.response.data.error, {variant: "error"});
                 setLoading(false);
             });
     }

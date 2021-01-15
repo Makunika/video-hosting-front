@@ -1,8 +1,6 @@
 import React, { useState, useReducer } from 'react';
 
 
-console.log(localStorage.getItem('currentUser'));
-
 let user = localStorage.getItem('currentUser')
     ? JSON.parse(localStorage.getItem('currentUser'))
     : '';

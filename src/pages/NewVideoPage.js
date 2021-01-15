@@ -11,6 +11,10 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import API from "../utils/API";
 import {useAuthState} from "../context";
+import {useHistory} from "react-router";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import DialogContent from "@material-ui/core/DialogContent";
 
 function CircularProgressWithLabel(props) {
     return (
@@ -51,20 +55,18 @@ export default function NewVideoPage() {
     const classes = userStyle();
     const { enqueueSnackbar } = useSnackbar();
     const userDetails = useAuthState();
+    const history = useHistory();
     const [load, setLoad] = React.useState(false);
     const [progress, setProgress] = useState(0);
     const [formData, setFormData] = useState({
         name: "",
         about: '',
+        isPrivate: false
     })
 
     const handleChange = (event) => {
-        const formData1 = {
-            name: formData.name,
-            about: formData.about,
-        };
-        formData1[event.target.name] = event.target.value;
-        setFormData(formData1);
+        formData[event.target.name] = event.target.value;
+        setFormData({...formData});
     }
 
     const handleNewVideo = async () => {
@@ -72,29 +74,35 @@ export default function NewVideoPage() {
         const f = new FormData();
         f.append("name", formData.name);
         f.append("about", formData.about);
-        f.append("userId", userDetails.id);
+        f.append("userId", userDetails.user.id);
+	    f.append("isPrivate", false.toString());
         f.append("file", document.getElementById("icon-button-file").files[0])
-        await API.post("file/video", f, {
+        await API.post("file/videos", f, {
             onUploadProgress: (progressEvent) => {
                 const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
-                console.log("onUploadProgress", totalLength);
                 if (totalLength !== null) {
                     setProgress(Math.round((progressEvent.loaded * 100) / totalLength));
                 }
             }
         }).then((response) => {
-            console.log(response.data);
+                console.log(response.data);
+		        enqueueSnackbar("Загрузка успешно завершена", { variant: "success"});
                 setLoad(false);
                 setProgress(0);
+                history.push("/video/" + response.data.data.id);
         },
             (error) => {
-                console.log(error);
-                enqueueSnackbar(error.response, { variant: "error"});
+                enqueueSnackbar(error.response.data.error, { variant: "error"});
                 setLoad(false);
                 setProgress(0);
             }).catch((error) => {
                 console.log(error);
         })
+    }
+
+    function handlePrivate() {
+        formData.isPrivate = !formData.isPrivate;
+        setFormData({...formData});
     }
 
     return (
@@ -134,6 +142,13 @@ export default function NewVideoPage() {
                                 label="Описание"
                                 name="about"
                                 autoComplete="off"
+                            />
+                        </Grid>
+                        <Grid item xs={12} >
+                            <FormControlLabel
+                                control={<Switch checked={formData.isPrivate} onChange={handlePrivate} name="privateVideo" />}
+                                label="Приватное видео"
+                                color="textPrimary"
                             />
                         </Grid>
                         <Grid item xs={12} lg={5}>

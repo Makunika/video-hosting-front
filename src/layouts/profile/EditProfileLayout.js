@@ -10,6 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {useAuthDispatch, useAuthState} from "../../context";
 import API from "../../utils/API";
 import {changeUsername} from "../../context/actions";
+import CustomAvatar from "../../components/CustomAvatar";
 
 
 const useStyle = makeStyles((theme) => ({
@@ -31,7 +32,8 @@ export default function EditProfileLayout() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        username: userDetails.user.username
+        username: userDetails.user.username,
+        img: userDetails.user.img
     })
     const [loading, setLoading] = useState(false);
 
@@ -41,17 +43,18 @@ export default function EditProfileLayout() {
             .then((response) => {
                 console.log(response);
                 changeUsername(dispatch, response.data.data);
-                enqueueSnackbar("Логин успешно изменен", { variant: "success"});
+                enqueueSnackbar("Профиль успешно изменен", { variant: "success"});
                 setLoading(false);
             },
                 (error) => {
-                console.log(error);
-                setLoading(false);
+                    enqueueSnackbar(error.response.data.error, { variant: "error"});
+                    setLoading(false);
                 })
     }
 
     const handleChange = (event) => {
         const formData1 = {
+            ...formData,
             email: formData.email,
             password: formData.password,
             username: formData.username
@@ -61,6 +64,24 @@ export default function EditProfileLayout() {
         setFormData(formData1);
     }
 
+    function handleLoadImg(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        setLoading(true);
+        reader.onload = () => {
+            setFormData({
+                ...formData,
+                img: reader.result
+            })
+            setLoading(false);
+        }
+        reader.onerror = error => {
+            enqueueSnackbar("Ошибка при перекодировании картинки", { variant: "warning"});
+            setLoading(false);
+        };
+    }
+
     return (
         <Container maxWidth={"sm"}>
             <div className={classes.paper}>
@@ -68,10 +89,10 @@ export default function EditProfileLayout() {
                     <Grid container spacing={3} justify="center">
                         <Grid item xs={12}>
                             <div className={classes.flex}>
-                                <Avatar>A</Avatar>
-                                <input accept="image/*" className={classes.input} id="icon-button-file" type="file" />
+                                <CustomAvatar src={formData.img} name={userDetails.user.username} />
+                                <input accept="image/*" className={classes.input} id="icon-button-file" type="file" onChange={handleLoadImg} />
                                 <label htmlFor="icon-button-file">
-                                    <IconButton color="primary" size="small" aria-label="upload picture" component="span">
+                                    <IconButton color="primary" size="small" aria-label="upload picture" component="span" disabled={loading}>
                                         <PhotoCamera />
                                     </IconButton>
                                 </label>

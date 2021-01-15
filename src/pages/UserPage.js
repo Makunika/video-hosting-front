@@ -1,13 +1,14 @@
 import {useAuthDispatch, useAuthState} from "../context";
 import React, {useEffect, useState} from "react";
 import {checkAuth} from "../context/actions";
-import {Avatar, Button, ButtonGroup, Container, Divider, Grid, Typography} from "@material-ui/core";
+import {Button, ButtonGroup, Container, Divider, Grid, Typography} from "@material-ui/core";
 import PanelCardsVideosLayout from "../layouts/PanelCardsVideosLayout";
 import API from "../utils/API";
 import {useHistory, useParams} from "react-router-dom";
 import Loading from "../components/Loading";
 import {useSnackbar} from "notistack";
 import Fade from "@material-ui/core/Fade";
+import CustomAvatar from "../components/CustomAvatar";
 
 export default function UserPage()
 {
@@ -37,8 +38,7 @@ export default function UserPage()
                     enqueueSnackbar("Видео загружены", {variant: "info"});
                     loadUserData();
                 }, (error) => {
-                    console.log(error);
-                    enqueueSnackbar("Произошла ошибка", {variant: "error"});
+                    enqueueSnackbar(error.response.data.error, {variant: "error"});
                 })
     }, [])
 
@@ -50,7 +50,7 @@ export default function UserPage()
                     enqueueSnackbar("Данные юзера загружены", {variant: "info"});
                     setLoading(false);
                 }, (error) => {
-                    enqueueSnackbar("Произошла ошибка", {variant: "error"});
+                    enqueueSnackbar(error.response.data.error, {variant: "error"});
                 })
     }
 
@@ -64,8 +64,8 @@ export default function UserPage()
             .then((response) => {
                 enqueueSnackbar("Роль именилась", {variant: "info"});
                 loadUserData();
-            }, () => {
-                    enqueueSnackbar("Произошла ошибка при смене роли пользователя", {variant: "error"});
+            }, (error) => {
+                    enqueueSnackbar(error.response.data.error, {variant: "error"});
             });
     }
 
@@ -74,19 +74,21 @@ export default function UserPage()
             .then((res) => {
                 enqueueSnackbar("Пользователь с id = " + userId + " удален", {variant: "info"});
                 history.push("/");
-            }, () => {
-                enqueueSnackbar("Произошла ошибка при удалении пользователя", {variant: "error"});
+            }, (error) => {
+                enqueueSnackbar(error.response.data.error, {variant: "error"});
             });
     }
 
     const main =
         <Container maxWidth={"lg"} style={{marginTop: 40}}>
             <Grid container spacing={4} direction="column" justify="flex-start" alignItems="center">
-                <Grid item container spacing={3} xs={12} justify="flex-end" alignItems="center">
+                <Grid item container spacing={3} xs={12} justify="flex-start" alignItems="center">
                     <Grid item container spacing={3} xs={8} justify="flex-start" alignItems="center">
-                        <Avatar style={{marginRight:25}}>
-                            {userData.name[0].toUpperCase()}
-                        </Avatar>
+                        <CustomAvatar
+                            src={userData.img}
+                            name={userData.name}
+                            style={{marginRight:25}}
+                        />
                         <Typography variant="h6" color="textPrimary">
                             {userData.name}
                         </Typography>

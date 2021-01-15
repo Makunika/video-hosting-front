@@ -169,7 +169,7 @@ export default function TableVideosLayout() {
                 },
                 (error) => {
                     console.log(error);
-                    enqueueSnackbar("Произошла ошибка", {variant: "error"});
+                    enqueueSnackbar(error.response.data.error, {variant: "error"});
                 })
     }
 
@@ -187,7 +187,7 @@ export default function TableVideosLayout() {
             },
                 (error) => {
                     console.log(error);
-                    enqueueSnackbar("Произошла ошибка при удалении", {variant: "error"});
+                    enqueueSnackbar(error.response.data.error, {variant: "error"});
                 })
     }
 

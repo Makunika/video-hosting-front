@@ -17,6 +17,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserPage from "./pages/UserPage";
 import pink from "@material-ui/core/colors/pink";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 const theme = createMuiTheme({
   palette: {
@@ -53,6 +54,7 @@ function Routing() {
     return (
         <Switch>
             <Route path="/video/:videoToken" children={<VideoPage />} />
+            <Route path="/user/:userId" children={<UserPage />} />
             <Route exact path="/" children={<HomePage />} />
             {
                 !auth && <Route path="/auth" children={<AuthPage />} />
@@ -66,9 +68,6 @@ function Routing() {
             {
                 auth && <Route path="/new" children={<NewVideoPage />} />
             }
-            {
-                auth && <Route path="/user/:userId" children={<UserPage />} />
-            }
             <Route children={<NotFoundPage />} />
         </Switch>
     )
@@ -80,6 +79,7 @@ function App() {
     return (
         <AuthProvider>
             <ThemeProvider theme={theme}>
+                <CssBaseline />
                 <SnackbarProvider maxSnack={3}>
                     <PrimarySearchAppBar />
                     <StyledContainer maxWidth="lg">

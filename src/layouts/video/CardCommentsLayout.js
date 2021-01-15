@@ -19,6 +19,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import {useHistory} from "react-router";
+import CustomAvatar from "../../components/CustomAvatar";
 
 
 function CardCommentsLayout(props) {
@@ -41,7 +42,7 @@ function CardCommentsLayout(props) {
                 setLoading(true);
             }, (error) => {
                 console.log(error.data);
-                enqueueSnackbar("Ошибка при загрузки комментариев", {variant: "error"});
+                enqueueSnackbar(error.response.data.error, {variant: "error"});
                 setLoading(true);
             })
 
@@ -68,7 +69,7 @@ function CardCommentsLayout(props) {
                 },
                 (error) => {
                     console.log(error.data);
-                    enqueueSnackbar("Ошибка при создании комментария", {variant: "error"});
+                    enqueueSnackbar(error.response.data.error, {variant: "error"});
                 });
     }
 
@@ -163,9 +164,12 @@ function ListComments(props) {
                         <React.Fragment key={index}>
                         <ListItem alignItems="flex-start">
                             <ListItemAvatar>
-                                <Avatar onClick={() => history.push("/user/" + item.user.id)} style={{cursor: 'pointer'}}>
-                                    {item.user.name[0].toUpperCase()}
-                                </Avatar>
+                                <CustomAvatar
+                                    src={item.user.img}
+                                    name={item.user.name}
+                                    onClick={() => history.push("/user/" + item.user.id)}
+                                    style={{cursor: 'pointer'}}
+                                />
                             </ListItemAvatar>
                             <ListItemText
                                 primary={

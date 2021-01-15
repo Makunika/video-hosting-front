@@ -15,6 +15,7 @@ import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
 import {useHistory} from "react-router";
 import Loading from "../../components/Loading";
+import CustomAvatar from "../../components/CustomAvatar";
 
 const useStyles = makeStyles({
     video: {
@@ -65,7 +66,7 @@ function CardVideoLayout(props) {
                         setLike(mark.markOwner);
                     },
                     (error) => {
-                        enqueueSnackbar("Произошла ошибка при загрузке лайков", { variant: "error"})
+                        enqueueSnackbar(error.response.data.error, { variant: "error"})
                     })
         } else {
             API.get(`/marks/${videoToken}`)
@@ -79,7 +80,7 @@ function CardVideoLayout(props) {
                         setLike(0);
                     },
                     (error) => {
-                        enqueueSnackbar("Произошла ошибка при загрузке лайков", { variant: "error"})
+                        enqueueSnackbar(error.response.data.error, { variant: "error"})
                     })
         }
     }
@@ -102,7 +103,7 @@ function CardVideoLayout(props) {
                     setLike(mark.markOwner);
             },
                 (error) => {
-                    enqueueSnackbar("Произошла ошибка при установки лайка", { variant: "error"})
+                    enqueueSnackbar(error.response.data.error, { variant: "error"})
                     setMarkLoad(false);
                     setLike(0);
                     setMarkLoad(false);
@@ -117,7 +118,7 @@ function CardVideoLayout(props) {
                 },
                 (error) => {
                     console.log(error);
-                    enqueueSnackbar("Произошла ошибка при удалении", {variant: "error"});
+                    enqueueSnackbar(error.response.data.error, {variant: "error"});
                 })
     }
 
@@ -125,13 +126,12 @@ function CardVideoLayout(props) {
     useEffect(() => {
         API.get('/videos/' + token)
             .then((res) => {
-                console.log(res.data.data);
                 setVideoData(res.data.data);
                 setIsLoaded(true);
                 loadMarks();
             },
                 (error) => {
-                    enqueueSnackbar("Произошла ошибка", { variant: "error"})
+                    enqueueSnackbar(error.response.data.error, { variant: "error"})
                 })
             .catch(() => {
             });
@@ -222,9 +222,12 @@ function CardVideoLayout(props) {
             <Divider variant="middle" />
             <CardHeader
                 avatar={
-                    <Avatar onClick={() => history.push("/user/" + videoData.user.id)} style={{cursor: 'pointer'}}>
-                        {videoData.user.name[0].toUpperCase()}
-                    </Avatar>
+                    <CustomAvatar
+                        src={videoData.user.img}
+                        name={videoData.user.name}
+                        onClick={() => history.push("/user/" + videoData.user.id)}
+                        style={{cursor: 'pointer'}}
+                    />
                 }
                 title={<div onClick={() => history.push("/user/" + videoData.user.id)} style={{cursor: 'pointer'}}>{videoData.user.name}</div>}/>
             <CardContent>

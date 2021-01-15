@@ -36,7 +36,7 @@ function HomeVideosLayout() {
                     console.log(response)
                 })
             .catch(() => {
-                console.log('WOOOOW');
+
             });
     }, [page]);
 

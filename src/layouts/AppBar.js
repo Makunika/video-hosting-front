@@ -14,6 +14,7 @@ import {useHistory} from "react-router-dom";
 import {logout, useAuthDispatch, useAuthState} from "../context";
 import {checkAuth} from "../context/actions";
 import CustomizedSearch from "../components/CustomSearch";
+import CustomAvatar from "../components/CustomAvatar";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -189,7 +190,16 @@ export default function PrimarySearchAppBar() {
                             onClick={handleProfileMenuOpen}
                             color="inherit"
                         >
-                            <AccountCircle />
+                            {auth ?
+                                <CustomAvatar
+                                src={userDetails.user.img}
+                                name={userDetails.user.username}
+                                style={{height:30, width: 30}}
+                                orange={1}
+                                />
+                            :
+                                <AccountCircle />
+                            }
                         </IconButton>
                         {auth &&
                         <IconButton
