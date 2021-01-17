@@ -82,8 +82,8 @@ export default function UserPage()
     const main =
         <Container maxWidth={"lg"} style={{marginTop: 40}}>
             <Grid container spacing={4} direction="column" justify="flex-start" alignItems="center">
-                <Grid item container spacing={3} xs={12} justify="flex-start" alignItems="center">
-                    <Grid item container spacing={3} xs={8} justify="flex-start" alignItems="center">
+                <Grid item container spacing={3} xs={12} justify="space-between" alignItems="center">
+                    <Grid item container spacing={3} xs={12} md={8} justify="flex-start" alignItems="center">
                         <CustomAvatar
                             src={userData.img}
                             name={userData.name}
@@ -94,7 +94,7 @@ export default function UserPage()
                         </Typography>
                     </Grid>
                     {userDetails.user.isAdmin === true &&
-                    <Grid item xs={4} >
+                    <Grid item xs={12} md={4} >
                         <ButtonGroup variant="outlined" size="small" color="secondary">
                             <Button onClick={handleChangeRole}>
                                 {userData.isAdmin ? "Убрать права администратора" : "Сделать администратором"}

@@ -10,7 +10,7 @@ export default function PanelCardsVideosLayout(props) {
     const handleNextPage = props.handleNextPage;
     const nextPage = props.nextPage;
     return (
-        <Grid container spacing={4} justify="flex-start" alignItems="center">
+        <Grid container spacing={4} justify="center" alignItems="center">
             {videosData.length === 0 &&
             <Grid container item xs={12} justify="center">
                 <Typography variant="h5" color="textSecondary">

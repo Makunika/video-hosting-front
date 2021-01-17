@@ -24,9 +24,10 @@ import TextField from "@material-ui/core/TextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import {Divider} from "@material-ui/core";
-import {CheckBox} from "@material-ui/icons";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import useTheme from "@material-ui/core/styles/useTheme";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 function createData(id,name, views, likes, dislikes, about, isPrivate) {
     return { id ,name, views, likes, dislikes, about, isPrivate };
@@ -135,7 +136,7 @@ export default function TableVideosLayout() {
     const [orderBy, setOrderBy] = useState('calories');
     const [page, setPage] = useState(0);
     const [rows, setRows] = useState([]);
-    const [open, setOpen] = useState(false);
+    const [openEditVideoState, setOpenEditVideoState] = useState(false);
     const [currentRow, setCurrentRow] = useState({
         name: '',
         id: 0,
@@ -193,11 +194,11 @@ export default function TableVideosLayout() {
 
     function openEditVideo(row) {
         setCurrentRow(row);
-        setOpen(true);
+        setOpenEditVideoState(true);
     }
 
     function closeEditVideo() {
-        setOpen(false);
+        setOpenEditVideoState(false);
         loadRows();
     }
 
@@ -270,7 +271,7 @@ export default function TableVideosLayout() {
             </Paper>
             <EditVideo
                 handleClose={closeEditVideo}
-                open={open}
+                open={openEditVideoState}
                 row={currentRow}
                 handleChangeInput={(event) => {
                     currentRow[event.target.name] = event.target.value;
@@ -299,9 +300,18 @@ export default function TableVideosLayout() {
 }
 
 function EditVideo(props) {
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
-        <Dialog open={props.open} onClose={props.handleClose} aria-labelledby="form-dialog-title">
+        <Dialog
+            open={props.open}
+            onClose={props.handleClose}
+            aria-labelledby="form-dialog-title"
+            maxWidth="sm"
+            fullWidth={true}
+            fullScreen={fullScreen}
+        >
             <DialogTitle id="form-dialog-title">{"Редактирование видео '" + props.row.name + "'"}</DialogTitle>
             <DialogContent>
                 <DialogContentText>

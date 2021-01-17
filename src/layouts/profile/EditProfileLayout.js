@@ -1,5 +1,5 @@
-import {Avatar, Container, makeStyles} from "@material-ui/core";
-import React, {useState} from "react";
+import {Avatar, Container, Divider, makeStyles} from "@material-ui/core";
+import React, {useEffect, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import {TextValidator, ValidatorForm} from "react-material-ui-form-validator";
 import Button from "@material-ui/core/Button";
@@ -11,6 +11,13 @@ import {useAuthDispatch, useAuthState} from "../../context";
 import API from "../../utils/API";
 import {changeUsername} from "../../context/actions";
 import CustomAvatar from "../../components/CustomAvatar";
+import useTheme from "@material-ui/core/styles/useTheme";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
 
 
 const useStyle = makeStyles((theme) => ({
@@ -36,6 +43,7 @@ export default function EditProfileLayout() {
         img: userDetails.user.img
     })
     const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleEditProfile = () => {
         setLoading(true);
@@ -80,6 +88,14 @@ export default function EditProfileLayout() {
             enqueueSnackbar("Ошибка при перекодировании картинки", { variant: "warning"});
             setLoading(false);
         };
+    }
+
+    function closeChangePassword() {
+        setOpen(false);
+    }
+
+    function openChangePassword() {
+        setOpen(true);
     }
 
     return (
@@ -135,10 +151,117 @@ export default function EditProfileLayout() {
                                 Сохранить
                             </Button>
                         </Grid>
+                        <Grid item xs={12} lg={5}>
+                            <Button
+                                fullWidth
+                                variant="outlined"
+                                color="primary"
+                                disabled={loading}
+                                onClick={openChangePassword}
+                            >
+                                Изменить пароль
+                            </Button>
+                        </Grid>
                     </Grid>
 
                 </ValidatorForm>
             </div>
+            <ChangePassword
+                handleClose={closeChangePassword}
+                open={open}
+            />
         </Container>
     )
+}
+
+function ChangePassword(props) {
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const [passwordData, setPasswordData] = useState({
+        password: '',
+        newPassword: ''
+    })
+    const [load, setLoad] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        if (!props.open) {
+            passwordData.password = '';
+            passwordData.newPassword = '';
+            setPasswordData({...passwordData});
+        }
+    }, [props.open])
+
+
+    function changeInput(event) {
+        const newData = {...passwordData};
+        newData[event.target.name] = event.target.value;
+        setPasswordData(newData);
+    }
+
+    function handleButton() {
+        setLoad(true);
+        console.log(passwordData);
+        API.put("/change-password", {...passwordData})
+            .then((res) => {
+                enqueueSnackbar("Пароль изменен", { variant: "success" });
+                setLoad(false);
+                props.handleClose();
+            }, (error) => {
+                enqueueSnackbar(error.response.data.error, { variant: "error" });
+                setLoad(false);
+            })
+    }
+
+    return(
+        <Dialog
+            open={props.open}
+            onClose={() => { if (!load) props.handleClose()}}
+            aria-labelledby="form-dialog-title"
+            maxWidth="sm"
+            fullWidth={true}
+            fullScreen={fullScreen}
+        >
+            <DialogTitle id="form-dialog-title">Изменение пароля</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Измение пароля
+                </DialogContentText>
+                <TextField
+                    label="Пароль"
+                    variant="outlined"
+                    fullWidth
+                    onChange={changeInput}
+                    type="password"
+                    name="password"
+                    style={{marginBottom: 10}}
+                    value={passwordData.password}
+                    disabled={load}
+                >
+                </TextField>
+                <Divider variant={"fullWidth"} style={{marginBottom: 10}}/>
+                <TextField
+                    label="Новый пароль"
+                    variant="outlined"
+                    fullWidth
+                    type="password"
+                    onChange={changeInput}
+                    name="newPassword"
+                    value={passwordData.newPassword}
+                    disabled={load}
+                >
+                </TextField>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => { if (!load) props.handleClose()}} color="primary" disabled={load}>
+                    Отмена
+                </Button>
+                <Button onClick={handleButton} color="primary" disabled={load}>
+                    Применить
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+
+
 }

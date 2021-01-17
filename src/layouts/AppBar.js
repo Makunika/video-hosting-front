@@ -15,6 +15,8 @@ import {logout, useAuthDispatch, useAuthState} from "../context";
 import {checkAuth} from "../context/actions";
 import CustomizedSearch from "../components/CustomSearch";
 import CustomAvatar from "../components/CustomAvatar";
+import API from "../utils/API";
+import {useSnackbar} from "notistack";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -67,6 +69,7 @@ export default function PrimarySearchAppBar() {
     const auth = userDetails.token !== '';
     useEffect(() => checkAuth(dispatch), []);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+    const { enqueueSnackbar } = useSnackbar();
 
 
 
@@ -87,7 +90,14 @@ export default function PrimarySearchAppBar() {
     };
 
     const handleExit = async () => {
-        await logout(dispatch);
+        await API.delete("/auth")
+            .then((res) => {
+                logout(dispatch);
+                enqueueSnackbar("Вы вышли из аккаунта", {variant: "success"})
+            }, (error) => {
+                enqueueSnackbar(error.response.data.error, {variant: "error"})
+            })
+
         handleMobileMenuClose()
     };
 
