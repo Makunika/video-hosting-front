@@ -158,7 +158,7 @@ function CardVideoLayout(props) {
     const Video = (
         <Card>
             <CardMedia>
-                <video className={classes.video} controls>
+                <video className={classes.video} controls autoplay>
                     <source src={"http://localhost:8080/api/file/videos/" + videoData.video} type="video/mp4"/>
                 </video>
             </CardMedia>

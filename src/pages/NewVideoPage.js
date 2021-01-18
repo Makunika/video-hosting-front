@@ -75,7 +75,7 @@ export default function NewVideoPage() {
         f.append("name", formData.name);
         f.append("about", formData.about);
         f.append("userId", userDetails.user.id);
-	    f.append("isPrivate", false.toString());
+	    f.append("isPrivate", formData.isPrivate.toString());
         f.append("file", document.getElementById("icon-button-file").files[0])
         await API.post("file/videos", f, {
             onUploadProgress: (progressEvent) => {
