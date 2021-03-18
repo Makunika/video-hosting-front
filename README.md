@@ -1,70 +1,64 @@
-# Getting Started with Create React App
+# Курсовая работа по предмету Web-программирование
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Работа представляет собой аналог видео хостинга как youtube. Почти весь основной функционал ютуба был реализован.
 
-## Available Scripts
+Реализована система администрирования, то есть пользователь с правом администратора может удалять и видео, и комментарии, и пользователей.
 
-In the project directory, you can run:
+Также есть возможность создать приватное видео: оно не будет появляться на главное странице и в поиске, доступ только по ссылке.
 
-### `yarn start`
+### Код
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Backend часть: https://github.com/Makunika/video-hosting
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Серверная часть написана на языке Java с использованием фреймворка spring boot.
+В качестве базы данных использована СУБД PostgreSQL.
 
-### `yarn test`
+Клиентская часть написана с помощью React на языке JavaScript с использованием фреймворка Material Design.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Скриншоты работы
 
-### `yarn build`
+Главная страница:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+![home page](.img/main.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Страницы регистрации и входа:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+![login page](.img/login.png)
 
-### `yarn eject`
+![register page](.img/register.png)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Страница просмотра видео:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+![video page](.img/video.png)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+![video page](.img/video2.png)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Страница личного профиля:
 
-## Learn More
+![profile page](.img/profile.png)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Страница загрузки нового видео:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+![profile page](.img/create_new_video.png)
 
-### Code Splitting
+Страница профиля пользователя, доступное всем:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+![profile page](.img/user.png)
 
-### Analyzing the Bundle Size
+Страница профиля пользователя, доступное всем:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+![profile page](.img/user.png)
 
-### Making a Progressive Web App
+Страница профиля пользователя, доступное всем:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+![profile page](.img/user.png)
 
-### Advanced Configuration
+Если вы зашли под администратора, то у вас появляются дополнительные кнопки на некоторых страницах:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+![profile page](.img/userAdmin.png)
 
-### Deployment
+![profile page](.img/videoAdmin.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Сайт имеет адаптивность на всех страницах:
 
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+![profile page](.img/mobile.png)
